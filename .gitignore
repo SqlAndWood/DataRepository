@@ -1,0 +1,6 @@
+
+venv/
+
+Script/.idea/
+
+Script/com/__pycache__/

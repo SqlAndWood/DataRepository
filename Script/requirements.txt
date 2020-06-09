@@ -1,0 +1,9 @@
+#https://www.ghostscript.com/download/gsdnld.html Install GhostSctipt 9.52 for Windows
+openpyxl==3.0.3
+python-docx==0.8.10
+comtypes==1.1.7
+unidecode==1.1.1
+textract==1.6.3
+boto3==1.13.18
+camelot-py==0.8.0
+Ghostscript==0.6
