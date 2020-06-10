@@ -4,3 +4,5 @@ venv/
 Script/.idea/
 
 Script/com/__pycache__/
+
+Script/__pycache__/

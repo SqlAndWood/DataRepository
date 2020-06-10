@@ -4,9 +4,15 @@ import time
 import json
 
 def main():
-    start_time = time.time()
+    provided_address = "as"
 
-    provided_address = "8 Dighton St, PORT AUGUSTA WEST SA 5700  (C3MS)"
+    print(resolveAddress(provided_address))
+    pass
+
+
+def resolveAddress(provided_address):
+
+    start_time = time.time()
 
     australian_location_data = loadAustralianLocationData()
 
@@ -14,10 +20,13 @@ def main():
 
     likely_address = obtainSingleMostLikelyAddress(dict_of_matched_locations)
 
-    likely_address['seconds'] = (time.time() - start_time)
+    if likely_address is not None:
+        likely_address['seconds'] = (time.time() - start_time)
 
-    print(likely_address)
+        return likely_address
 
+    else:
+        return None
 
 def loadAustralianLocationData():
 
@@ -37,28 +46,34 @@ def readJSON(file_name_and_path):
     with open(file_name_and_path) as json_file:
         return json.load(json_file)
 
-
+# this does not prefernce a SA key over any other state/territory
 def createDictionaryOfMatchedLocationData(dict_location, provided_address):
 
     dic_identified = []
 
     for individual_key in dict_location:
 
-        score = 0
+        score = 0.0
 
         individual_key['location_len'] = observeLocation(provided_address, individual_key)
 
         # temporary while I figure out how I'd like the algorithm to be.
-        if individual_key.get('locality').upper() in provided_address.upper() and individual_key.get('postcode') in provided_address.upper():
-            score += 1
+        if individual_key.get('locality').upper() in provided_address.upper() and individual_key.get('postcode') in provided_address.upper() and individual_key.get('state') == 'SA':
+            score += 1.0
+
+        if individual_key.get('locality').upper() in provided_address.upper() and individual_key.get('postcode') == 'SA':
+            score += 1.0
 
         if individual_key.get('locality').upper() in provided_address.upper() : #and individual_key.get('postcode') in provided_address.upper():
-            score += 1
+            score += 1.0
 
         if individual_key.get('postcode').upper() in provided_address.upper():
-            score += 1
+            score += 0.5
 
-        if score > 0:
+        if provided_address.upper() in 'SA':
+            score += 0.5
+
+        if score > 1:
 
             individual_key['score'] = score
 
@@ -76,7 +91,7 @@ def obtainSingleMostLikelyAddress(dict_ofMatchedLocations):
         return sk
         break
 
-    return None
+    # return None
 
 
 def observeLocation(provided_address, individual_key):
