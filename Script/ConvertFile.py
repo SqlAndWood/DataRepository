@@ -13,6 +13,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter.filedialog import askopenfilename
 
+# window = tk.Tk() -> Display a new window.
 root = Tk(  )
 
 # column_to_resolve = "ClientAddress"
