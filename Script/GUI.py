@@ -1,148 +1,87 @@
+# https://pysimplegui.readthedocs.io/en/latest/
+import PySimpleGUI as sg
+
+""" 
+This module initiates the current app. 
+
+    Gui ->  no knowlege of business rules or other layers.
+
+"""
 
 
-import os
+# not straight forward https://docs.python.org/3/tutorial/classes.html
+global spam
+spam = "this is a global variable for testing purposes only"
 
-import tkinter as tk
-from tkinter import ttk, Menu, Canvas, Label
-
-
-from tkinter.filedialog import askopenfilename
-
-import OpenFile as of
-
-class MainApplication(ttk.Frame):
-    """ main class for the application """
-    def __init__(self,master,*args,**kwargs):
-        super().__init__(master,*args,**kwargs)
-
-        self.my_toolbar = Toolbar(self)
-
-        self.my_statusbar = StatusBar(self)
-        self.my_statusbar.set("This is the status bar")
-
-        self.centerframe = CenterFrame(self)
-
-        self.menubar = MenuBar(self)
-
-        self.pack(side=tk.TOP, expand=True, fill=tk.BOTH)
-
-    def button_function(self, *event):
-        print("Master Button Executed")
+# Colour options: https://user-images.githubusercontent.com/46163555/71361827-2a01b880-2562-11ea-9af8-2c264c02c3e8.jpg
+sg.ChangeLookAndFeel('Dark Blue 3')
 
 
-class CenterFrame(ttk.Frame):
+# Open a file using a file menu thingo.
 
-    def __init__(self,master,*args,**kwargs):
-        super().__init__(master,*args,**kwargs)
+# Creat the layout based on the file selected.
 
-        self.master = master
-        self.pack(side=tk.BOTTOM, fill=tk.X)
-        self.centerlabel = ttk.Label(self, text="text goes here: refer to Center Frame")
-        self.centerlabel.pack()
+# Based on the user inputs, perform surgery on the data.
 
+# ------ Menu Definition ------ #
+menu_def = [['&File', ['&Open', '&Save', 'E&xit', 'Properties']],
+            ['&Edit', ['Paste', ['Special', 'Normal', ], 'Undo'], ],
+            ['&Help', '&About...'], ]
 
-class StatusBar(ttk.Frame):
-    """ Simple Status Bar class - based on Frame """
-    def __init__(self,master):
-        ttk.Frame.__init__(self,master)
-
-        self.master = master
-        self.label = ttk.Label(self,anchor=tk.W)
-        self.label.pack()
-        self.pack(side=tk.BOTTOM, fill=tk.X)
-
-    def set(self,texto):
-        self.label.config(text=texto)
-        self.label.update_idletasks()
-
-    def clear(self):
-        self.label.config(text="")
-        self.label.update_idletasks()
+# ------ Column Definition ------ #
 
 
-class Toolbar(ttk.Frame):
-    """ Toolbar """
-    def button_one(self):
-        print("button 1 pressed")
+lb_column_headings = ('First Name', 'Surname', 'Full Address','DOB', 'Phone Number')
+lb_action_to_apply = ('Full Address -> [Suburb],[State],[Postcode]','')
 
-    def button_two(self):
-        print("button 2 pressed")
-        self.master.button_function()
+form_width = 120
 
+layout = [
+    [sg.Menu(menu_def, tearoff=False)]   ,
+    [
+        sg.Text('1. Select the file to process.\n2. Select the column to deidentify. \n3. Select the method to deidentify.'
+             '\n4. Select the output file location.')
+    ],
+    [sg.Text('_' * form_width)],
 
-    def __init__(self,master):
-        super().__init__(master)
+    # sg.InputText('', size=(60, 1), justification='left'),
+    # https://github.com/PySimpleGUI/PySimpleGUI/issues/850
+    [sg.Text('1. Select File:', size=(10, 1), auto_size_text=False, justification='left')],
+    [sg.Input(key='_FILEBROWSE_', enable_events=True, visible=False)],
+    [
+    sg.FileBrowse (
+                    button_text="Browse",
+                    file_types=( ('CSV Files', '*.csv'),('TXT Files', '*.txt'),('All Files', '*.*')),
+                    initial_folder=None,
+                    target='_FILEBROWSE_'
+                    )
+    ],
 
-        self.master = master
-        self.pack(side=tk.TOP, fill=tk.X)
-
-        self.button1 = ttk.Button(self,text="One",command=self.button_one)
-        self.button2 = ttk.Button(self,text="Two",command=self.button_two)
-
-        self.button1.grid(row=0,column=0)
-        self.button2.grid(row=0,column=1)
-
-class MenuBar(ttk.Frame):
-
-    def Presentation(self, column_headings):
-
-        # https://subscription.packtpub.com/book/web_development/9781788622301/1/ch01lvl1sec19/displaying-a-list-of-items
-        for item in column_headings:
-            w = Label(root, text=item)
-            w.pack()
-
-    def OpenFile(self):
-        print("Open File selected")
-        self.master.button_function()
-
-        mapping_folder_path = os.path.abspath(os.path.dirname("."))
-
-        file_name_and_path = askopenfilename(
-                                                initialdir=mapping_folder_path,
-                                                filetypes=(
-                                                            ("Text File", "*.csv"),
-                                                            ("All Files", "*.*")
-                                                            ),
-                                                title="Choose a file."
-                                             )
-
-        # label = ttk.Label(root, text=file_name_and_path, foreground="black", font=("Helvetica", 12))
-        # label.pack()
-
-        file_name = file_name_and_path[len(mapping_folder_path) + 1:len(file_name_and_path)]
-
-        # Using try in case user types in unknown file or closes without choosing a file.
-        try:
-            print('about to process data')
-            column_headings =   of.ObtainFileHeader(file_name_and_path)
-            self.Presentation(column_headings)
-
-            # CreateData(file_name, file_name_and_path, mapping_folder_path)
-            # print('completed with the data')
-        except:
-            print("No file exists")
-
-    def __init__(self, master, *args, **kwargs):
-        super().__init__(master, *args, **kwargs)
-
-        self.master = master
-        self.pack(side=tk.TOP, fill=tk.X)
-
-        canvas = Canvas(width=300, height=200, bg='white')
-        canvas.pack(expand = "YES")
-
-        menu = Menu(root)
-        root.config(menu=menu)
-
-        self.file = Menu(menu)
-
-        menu.add_cascade(label='File', menu=self.file)
-
-        self.file.add_command(label='Open', command= self.OpenFile )
-        self.file.add_command(label='Exit', command=lambda: exit())
+    [sg.Text('_' * form_width)],
+    [
+        sg.Frame('Column Headings',[[sg.Listbox(values=lb_column_headings, size=(30, len(lb_column_headings)))]], title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='Oh Boy!')
+        ,
+        sg.Frame('Action to Apply',[[sg.Listbox(values=lb_action_to_apply, size=(form_width-40, len(lb_action_to_apply)))]], title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='Oh Boy!')
+    ],
+    [sg.Text('_' * form_width)],
+    [sg.Submit(tooltip='Click to submit this form'), sg.Cancel()]
+]
 
 
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = MainApplication(root)
-    root.mainloop()
+
+# https://github.com/PySimpleGUI/PySimpleGUI/issues/850
+# window = sg.Window('A whole new world!', layout, default_element_size=(40, 1), grab_anywhere=False)
+window = sg.Window('A whole new world!').Layout(layout)
+
+while True:             # Event Loop
+    event, values = window.Read()
+    if event is None:
+        break
+    print(event, values)
+# event, values = window.read()
+# window.close()
+
+sg.Popup('Title',
+         'The results of the window.',
+         'The button clicked was "{}"'.format(event),
+         'The values are', values)
