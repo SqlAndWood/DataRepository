@@ -4,9 +4,8 @@ https://gist.github.com/Yagisanatode/0d1baad4e3a871587ab1
 """
 import os
 from csv import DictReader
-import AddressFinder
+from old_code import AddressFinder
 
-from collections import OrderedDict
 import csv
 
 from tkinter import *

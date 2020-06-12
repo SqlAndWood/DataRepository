@@ -30,7 +30,6 @@ menu_def = [['&File', ['&Open', '&Save', 'E&xit', 'Properties']],
 
 # ------ Column Definition ------ #
 
-
 lb_column_headings = ('First Name', 'Surname', 'Full Address','DOB', 'Phone Number')
 lb_action_to_apply = ('Full Address -> [Suburb],[State],[Postcode]','')
 
