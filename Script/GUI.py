@@ -5,6 +5,11 @@ from random import randint
 import PySimpleGUI as sg
 from Locality.Locality import Locality
 from fileHandler import *
+import ScreenDetails as sd
+
+
+sd = sd.ScreenDetails().monitor_dictionary
+print(sd)
 
 # ------ Make the Table Data ------
 DATA_GRID_COL_HEADINGS = ('','')
