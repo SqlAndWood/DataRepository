@@ -17,12 +17,13 @@ class Locality:
     file_name = 'australian_postcodes.json'
 
     # l = Locality(file_name_and_path)
-    def __init__(self, file_name_and_path, column_to_resolve):
+    def __init__(self, window, file_name_and_path, column_to_resolve):
 
         start_time = time.time()
 
         self.file_name_and_path = file_name_and_path
         self.column_to_resolve = column_to_resolve
+        self.window = window
 
         fh = fileHandler(file_name_and_path)
 
@@ -34,6 +35,11 @@ class Locality:
         self.data_list = self.read_file()
 
         self.time_to_execute_seconds = (time.time() - start_time)
+
+    def updateStatusBar(self, message):
+        self.window.FindElement('_STATUSBAR_').Update(message + '\n', append=True, autoscroll=True)
+        self.window.Refresh()
+
 
     def appendColumnHeadings(self):
 
@@ -63,6 +69,8 @@ class Locality:
 
                 # if la is not None:
                 #     print(row[self.column_to_resolve] , ' : ', row)
+                self.updateStatusBar(json.dumps(row))
+
                 row['seconds'] = (time.time() - start_time)
                 data_list.append(json.loads(json.dumps(row)))
 
