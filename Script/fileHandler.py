@@ -11,6 +11,7 @@ class fileHandler:
         self.column_headings = self.obtainColumnHeadings()
         self.data_list = self.read_file()
 
+
     def obtainColumnHeadings(self):
 
         with open(self.file_name_and_path, "r",  encoding='utf-8-sig') as file_to_use:
@@ -28,7 +29,8 @@ class fileHandler:
 
             #this may not be necessary
             for row in csv_dict_reader:
-                data_list.append(json.loads(json.dumps(row)))
+                 data_list.append(row)
+            #     data_list.append(json.loads(json.dumps(row)))
 
 
         # might be able to return csv_dict_reader ??
