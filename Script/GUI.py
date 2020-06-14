@@ -18,17 +18,29 @@ visible_for_debug = True
 COL_HEADINGS = ('', '')
 lb_action_to_apply = ('Full Address -> [Suburb],[State],[Postcode]','')
 
+file_name_and_path = ""
+selected_column = ""
 
 debug_font = ("courier", 10)
 
 tempFile = "I:\git\WordToExcel\Data\\20200602\\"
 
 
-def updateStatusBar(window, message):
-    window.FindElement( '_STATUSBAR_').Update(message + '\n', append=True, autoscroll=True)
+def updateStatusBar(window, message, override_previous):
 
-def updateEventDisplayBar(window, message):
-    window.FindElement('_EVENTDISPLAYBAR_').Update(message, append=False, autoscroll=False)
+    if override_previous == True:
+        window.FindElement( '_STATUSBAR_').Update(message + '\n', append=False, autoscroll=True)
+    else:
+        window.FindElement('_STATUSBAR_').Update(message + '\n', append=True, autoscroll=True)
+
+
+def updateEventDisplayBar(window, message, override_previous):
+    if override_previous == True:
+        window.FindElement('_EVENTDISPLAYBAR_').Update(message, append=False, autoscroll=False)
+    else:
+        window.FindElement('_EVENTDISPLAYBAR_').Update(message, append=False, autoscroll=False)
+
+
 
 # ------ Column Definition ------ #
 # Colour options: https://user-images.githubusercontent.com/46163555/71361827-2a01b880-2562-11ea-9af8-2c264c02c3e8.jpg
@@ -65,7 +77,7 @@ layout = [
 
     [sg.Text('_' * form_width)],
     [
-        sg.Frame('Column Headings (deprecate)',[[sg.Listbox(key='_COLUMNHEADINGS_', values=COL_HEADINGS, size=(30, len(COL_HEADINGS)))]], title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='')
+        sg.Frame('Column Headings',[[sg.Listbox(key='_COLUMNHEADINGS_', enable_events=True, values=COL_HEADINGS, size=(30, len(COL_HEADINGS)))]], title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='')
         ,
         sg.Frame('Action to Apply',[[sg.Listbox(values=lb_action_to_apply, size=(form_width-40, len(lb_action_to_apply)))]], title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='')
     ],
@@ -79,7 +91,7 @@ layout = [
 ]
 
 # https://github.com/PySimpleGUI/PySimpleGUI/issues/850
-window = sg.Window('A whole new world!').Layout(layout)
+window = sg.Window('Data Cleansing').Layout(layout)
 
 #https://stackoverflow.com/questions/55515627/pysimplegui-call-a-function-when-pressing-button
 # While Loop might not be necessary.
@@ -87,11 +99,11 @@ while True:
 
     event, values = window.Read()
 
-    file_name_and_path = ""
+
 
     if event is not None:
-        updateEventDisplayBar(window, 'event name: ' + event)
-        updateEventDisplayBar(window, json.dumps(values))
+        updateEventDisplayBar(window, 'event name: ' + event, False)
+        updateEventDisplayBar(window, json.dumps(values), False)
 
     # This makes the app stop when you press X (close)
     elif event is None:
@@ -112,7 +124,7 @@ while True:
             window.FindElement('_COLUMNHEADINGS_').Update(values=DATA_GRID_COL_HEADINGS)
             window.FindElement('_COLUMNHEADINGS_').set_size((30, len(DATA_GRID_COL_HEADINGS)))
 
-            updateStatusBar(window, 'Column Headings : ' + ', '.join(DATA_GRID_COL_HEADINGS))
+            updateStatusBar(window, 'Column Headings : ' + ', '.join(DATA_GRID_COL_HEADINGS), False)
 
         else:
             window.FindElement('_FILETOPROCESS_').Update(text_color='gray')
@@ -120,12 +132,27 @@ while True:
 
     elif event == '_SUBMIT_' :
 
+        file_name_and_path = values.get('_FILEBROWSE_')
+
         if file_name_and_path != "" :
 
-            updateStatusBar(window, 'STUB: With the file name in mind, process each line...')
-            l = Locality(window, file_name_and_path, "ClientAddress")
+            if (selected_column == "" ):
+                print('Column heading not selected! ')  #do this first prior to continuing.
 
-            updateStatusBar(window, 'Completed processing : ' + str(l.time_to_execute_seconds))
+            updateStatusBar(window, 'STUB: With the file name in mind, process each line...', False)
+            l = Locality(window, file_name_and_path, selected_column)
+
+            updateStatusBar(window, 'Completed processing : ' + str(l.time_to_execute_seconds), False)
+
+            # We need a way to deal with a Data set, rather than always opening the file.
+
+    elif event == '_COLUMNHEADINGS_' :  # if a list item is chosen
+
+        for selected in values['_COLUMNHEADINGS_']:
+            selected_column = selected
+            updateStatusBar(window, 'Selected Heading : ' + str(selected_column), False)
+            break
+
 
     elif event == '_VIEWDATA_':
 
