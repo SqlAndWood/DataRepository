@@ -5,7 +5,7 @@ import PySimpleGUI as sg
 
 
 # in house created code reference
-from Locality.Locality import Locality
+from DataClensing.Locality import Locality
 from fileHandler import *
 
 import ScreenDetails as sd
@@ -20,6 +20,9 @@ lb_action_to_apply = ('Full Address -> [Suburb],[State],[Postcode]','')
 
 file_name_and_path = ""
 selected_column = ""
+
+DATA_GRID_COL_HEADINGS = []
+DATA_GRID_NESTED_LIST = []
 
 debug_font = ("courier", 10)
 
@@ -55,11 +58,11 @@ command_button_size = (15,1)
 
 layout = [
     [sg.Menu(menu_def, tearoff=False)]   ,
-    [
-        sg.Text(
-            '1. Select the file to process.\n2. Select the column to deidentify. \n3. Select the method to deidentify.'
-            '\n4. Select the output file location.')
-    ],
+    # [
+    #     sg.Text(
+    #         '1. Select the file to process.\n2. Select the column to deidentify. \n3. Select the method to deidentify.'
+    #         '\n4. Select the output file location.')
+    # ],
     [sg.Text('_' * form_width)],
 
     [
@@ -74,7 +77,6 @@ layout = [
                         target='_FILEBROWSE_'
                     )
     ],
-
     [sg.Text('_' * form_width)],
     [
         sg.Frame('Column Headings',[[sg.Listbox(key='_COLUMNHEADINGS_', enable_events=True, values=COL_HEADINGS, size=(30, len(COL_HEADINGS)))]], title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='')
@@ -99,8 +101,6 @@ while True:
 
     event, values = window.Read()
 
-
-
     if event is not None:
         updateEventDisplayBar(window, 'event name: ' + event, False)
         updateEventDisplayBar(window, json.dumps(values), False)
@@ -119,7 +119,8 @@ while True:
 
             file_containing_data = fileHandler(file_name_and_path)
 
-            DATA_GRID_COL_HEADINGS = (file_containing_data.column_headings)
+            DATA_GRID_COL_HEADINGS = file_containing_data.column_headings
+            DATA_GRID_NESTED_LIST = file_containing_data.data_nested_list
 
             window.FindElement('_COLUMNHEADINGS_').Update(values=DATA_GRID_COL_HEADINGS)
             window.FindElement('_COLUMNHEADINGS_').set_size((30, len(DATA_GRID_COL_HEADINGS)))
@@ -140,10 +141,14 @@ while True:
                 print('Column heading not selected! ')  #do this first prior to continuing.
 
             updateStatusBar(window, 'STUB: With the file name in mind, process each line...', False)
-            l = Locality(window, file_name_and_path, selected_column)
+
+            l = Locality(window, DATA_GRID_COL_HEADINGS , DATA_GRID_NESTED_LIST, selected_column)
+            DATA_GRID_NESTED_LIST=l.data_nested_list
 
             updateStatusBar(window, 'Completed processing : ' + str(l.time_to_execute_seconds), False)
 
+            window.FindElement('_COLUMNHEADINGS_').Update(values=DATA_GRID_COL_HEADINGS)
+            window.FindElement('_COLUMNHEADINGS_').set_size((30, len(DATA_GRID_COL_HEADINGS)))
             # We need a way to deal with a Data set, rather than always opening the file.
 
     elif event == '_COLUMNHEADINGS_' :  # if a list item is chosen
@@ -156,12 +161,10 @@ while True:
 
     elif event == '_VIEWDATA_':
 
-        file_name_and_path = values.get('_FILEBROWSE_')
-
         if file_name_and_path != "":
 
             from DataTablePopUp import *
-            DataTablePopUp(data_table_headings=file_containing_data.column_headings, data_table_data=file_containing_data.data_nested_list, data_description=file_containing_data.file_name)
+            DataTablePopUp(data_table_headings=DATA_GRID_COL_HEADINGS, data_table_data=DATA_GRID_NESTED_LIST, data_description=file_containing_data.file_name)
 
             pass
 

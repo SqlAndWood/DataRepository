@@ -68,5 +68,3 @@ class fileHandler:
 
         self.file_size = self.file_statistics.st_size
         self.file_name = os.path.basename(self.file_name_and_path)
-
-        pass
