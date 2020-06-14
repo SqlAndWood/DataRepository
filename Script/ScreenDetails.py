@@ -1,9 +1,9 @@
 class ScreenDetails:
 
+
     def __init__(self):
         self.monitor_dictionary = self.main()
 
-        # print(self.monitor_dictionary)
 
     def main(self):
 

@@ -3,7 +3,6 @@
 
 import PySimpleGUI as sg
 
-import json
 
 # in house created code reference
 from Locality.Locality import Locality
@@ -40,6 +39,8 @@ menu_def = [['&File', ['&Open', '&Save', 'E&xit', 'Properties']],
             ['&Edit', ['Paste', ['Special', 'Normal', ], 'Undo'], ],
             ['&Help', '&About...'], ]
 
+command_button_size = (15,1)
+
 layout = [
     [sg.Menu(menu_def, tearoff=False)]   ,
     [
@@ -70,7 +71,7 @@ layout = [
     ],
     [sg.Text('_' * form_width)],
 
-    [sg.Submit(key='_SUBMIT_', tooltip='', size=(15,1) ), sg.Cancel( size=(15,1)), sg.Submit("View Data", key='_VIEW DATA_', tooltip='', size=(15,1)) ],
+    [sg.Submit(key='_SUBMIT_', tooltip='', size= command_button_size ), sg.Cancel( size= command_button_size), sg.Submit("View Data", key='_VIEWDATA_', tooltip='', size= command_button_size) ],
 
     [sg.Multiline( key='_STATUSBAR_', size=(110, 5), auto_size_text=False, text_color='white', background_color='lightslategray', visible=visible_for_debug, font=debug_font )],
     [sg.Multiline( key='_EVENTDISPLAYBAR_', size=(110, 2), auto_size_text=False, text_color='white', background_color='lightslategray', visible=visible_for_debug, font=debug_font)],
@@ -97,7 +98,6 @@ while True:
         break
 
     if event == '_FILEBROWSE_':
-        # TODO: Test that an acutal File was provided
 
         file_name_and_path = values.get('_FILEBROWSE_')
 
@@ -105,9 +105,9 @@ while True:
             window.FindElement('_FILETOPROCESS_').Update(text_color='black')
             window.FindElement('_FILETOPROCESS_').Update(file_name_and_path)
 
-            h = fileHandler(file_name_and_path)
+            file_containing_data = fileHandler(file_name_and_path)
 
-            DATA_GRID_COL_HEADINGS = (h.column_headings)
+            DATA_GRID_COL_HEADINGS = (file_containing_data.column_headings)
 
             window.FindElement('_COLUMNHEADINGS_').Update(values=DATA_GRID_COL_HEADINGS)
             window.FindElement('_COLUMNHEADINGS_').set_size((30, len(DATA_GRID_COL_HEADINGS)))
@@ -127,7 +127,15 @@ while True:
 
             updateStatusBar(window, 'Completed processing : ' + str(l.time_to_execute_seconds))
 
-            # 1. Need our list of headings. they are used for the array to be created.
+    elif event == '_VIEWDATA_':
 
+        file_name_and_path = values.get('_FILEBROWSE_')
+
+        if file_name_and_path != "":
+
+            from DataTablePopUp import *
+            DataTablePopUp(data_table_headings=file_containing_data.column_headings, data_table_data=file_containing_data.data_nested_list, data_description=file_containing_data.file_name)
+
+            pass
 
 window.Close()
