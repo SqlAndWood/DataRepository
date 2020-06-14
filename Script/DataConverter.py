@@ -27,3 +27,8 @@ class DataConverter:
 
         return record
 
+
+    def printNestedList(self, nested_list):
+        for column in nested_list:
+            for item in column:
+                print(item, end=" ")
