@@ -7,7 +7,6 @@ class DataConverter:
 
         self.data_nested_list = self.createNestedList()
 
-
     def createNestedList(self):
 
         # if isinstance(self.data_list , list):
@@ -15,7 +14,7 @@ class DataConverter:
 
         record = []
 
-        for n in self.data_to_convert :
+        for n in self.data_to_convert:
             # if isinstance(n, dict):
             #     print('dict of ...')
             # https://www.ict.social/python/basics/multidimensional-lists-in-python
@@ -26,7 +25,6 @@ class DataConverter:
             record.append(column)
 
         return record
-
 
     def printNestedList(self, nested_list):
         for column in nested_list:

@@ -8,13 +8,14 @@ This class is designed to display data that has been obtained
 """
 import PySimpleGUI as sg
 
+
 class DataTablePopUp:
 
     # fh = DataTablePopUp(data_table_headings, data_table_data)
     def __init__(self, data_table_headings, data_table_data, data_description):
 
         self.form_width = 120
-        self.debug_font = ("courier", 10)
+        self.debug_font = ("courier", 9)
 
         self.data_description = data_description
         self.data_table_headings = data_table_headings
@@ -23,37 +24,35 @@ class DataTablePopUp:
 
         self.containment()
 
-
     def obtainScreenDetails(self):
         # These tweo will be closley linked
         import ScreenDetails as sd
         self.screen_details = sd.ScreenDetails().monitor_dictionary
 
-
     def containment(self):
 
         # https://github.com/PySimpleGUI/PySimpleGUI/blob/master/PySimpleGUI.py
         table = sg.Table(
-                values=self.data_table_data ,
-                headings=self.data_table_headings,
-                max_col_width=25,
-                background_color='lightblue',
-                auto_size_columns=False,
-                display_row_numbers=True,
-                justification='left',
-                num_rows=min(len(self.data_table_data), 30) ,
-                alternating_row_color='gray',
-                vertical_scroll_only=False,
-                hide_vertical_scroll=False,
-                font = self.debug_font,
-                key='_DATATABLE_'
-                # tooltip='This is a table'
-            )
+            values=self.data_table_data,
+            headings=self.data_table_headings,
+            max_col_width=25,
+            background_color='lightblue',
+            auto_size_columns=False,
+            display_row_numbers=True,
+            justification='left',
+            num_rows=min(len(self.data_table_data), 30),
+            alternating_row_color='gray',
+            vertical_scroll_only=False,
+            hide_vertical_scroll=False,
+            font=self.debug_font,
+            key='_DATATABLE_'
+            # tooltip='This is a table'
+        )
 
         sg.ChangeLookAndFeel('Dark Blue 3')
 
         # ------ Menu Definition ------ #
-        menu_def = [['&File', [ 'E&xit', 'Properties']],
+        menu_def = [['&File', ['E&xit', 'Properties']],
                     ['&Help', '&About...'], ]
 
         layout = [
@@ -66,9 +65,9 @@ class DataTablePopUp:
         ]
 
         # https://github.com/PySimpleGUI/PySimpleGUI/issues/850
-        window = sg.Window('Data Source: ' + self.data_description ).Layout(layout)
+        window = sg.Window('Data Source: ' + self.data_description).Layout(layout)
 
-        #https://stackoverflow.com/questions/55515627/pysimplegui-call-a-function-when-pressing-button
+        # https://stackoverflow.com/questions/55515627/pysimplegui-call-a-function-when-pressing-button
         # While Loop might not be necessary.
         while True:
 
@@ -82,9 +81,7 @@ class DataTablePopUp:
             elif event is None:
                 break
 
-
         window.Close()
-
 
 # This is just for testing this class
 # from fileHandler import *
