@@ -1,8 +1,9 @@
 import pandas as pd
 import os
 import time
-import json
 
+
+from DataConverter import *
 from fileHandler import *
 
 class Locality:
@@ -34,17 +35,24 @@ class Locality:
         self.data_list = []
         self.data_list = self.read_file()
 
+        # This is really important, although, it is a long winded operation to do so.
+
+        self.data_nested_list = DataConverter(self.data_list).data_nested_list
+
         self.time_to_execute_seconds = (time.time() - start_time)
 
-    def updateStatusBar(self, message):
-        self.window.FindElement('_STATUSBAR_').Update(message + '\n', append=True, autoscroll=True)
+    def updateStatusBar(self,  message, override_previous):
+        # if override_previous == True:
+        self.window.FindElement('_STATUSBAR_').Update('')
+        self.window.Refresh()
+        self.window.FindElement('_STATUSBAR_').Update(message, append=False)
         self.window.Refresh()
 
 
     def appendColumnHeadings(self):
 
         for column in locality_columns_to_append:
-            self.column_headings.append(column)
+            self.column_headings.append(self.column_to_resolve + "_" + column)
 
 
     def read_file(self):
@@ -62,19 +70,20 @@ class Locality:
                     # self.column_headings.append(column)
 
                     if la is not None:
-                        row[column] = la[column]
+                        row[self.column_to_resolve + "_" + column] = la[column]
                     else:
-                        row[column] = ''
+                        row[self.column_to_resolve + "_" + column] = ''
 
 
                 # if la is not None:
                 #     print(row[self.column_to_resolve] , ' : ', row)
-                self.updateStatusBar(json.dumps(row))
+                self.updateStatusBar(la, True)
 
                 row['seconds'] = (time.time() - start_time)
                 data_list.append(json.loads(json.dumps(row)))
 
         return(data_list)
+
 
     def resolveAddress(self,provided_address):
 
@@ -94,6 +103,7 @@ class Locality:
         else:
             return None
 
+
     def loadAustralianLocationData(self):
 
         pd.set_option("display.max_rows", 30, "display.max_columns", None)
@@ -106,6 +116,7 @@ class Locality:
     def readJSON(self,file_name_and_path):
         with open(file_name_and_path) as json_file:
             return json.load(json_file)
+
 
     # this does not prefernce a SA key over any other state/territory
     def createDictionaryOfMatchedLocationData(self,dict_location, provided_address):
@@ -142,6 +153,7 @@ class Locality:
 
         return dic_identified
 
+
     # This is a fuzzy adress match. Only one address is to be matched, as the most likely match.
     # matching the incorrect address is not a key issue here.
     def obtainSingleMostLikelyAddress(self,dict_ofMatchedLocations):
@@ -153,11 +165,9 @@ class Locality:
             break
 
 
-
     def observeLocation(self,provided_address, individual_key):
 
         if individual_key.get('locality').upper() in provided_address.upper():
             return len(individual_key.get('locality').upper())
         else:
             return -1
-
