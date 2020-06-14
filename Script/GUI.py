@@ -3,10 +3,10 @@
 
 import PySimpleGUI as sg
 
-import ScreenDetails as sd
+from ext import ScreenDetails as sd
 # in house created code reference
 from DataClensing.Locality import Locality
-from fileHandler import *
+from ext.fileHandler import *
 
 sd = sd.ScreenDetails().monitor_dictionary
 form_width = 120
@@ -15,7 +15,7 @@ form_width = 120
 # global visible_for_debug
 visible_for_debug = True
 COL_HEADINGS = ('', '')
-lb_action_to_apply = ('Full Address -> [Suburb],[State],[Postcode]', '')
+lb_action_to_apply = ('Full Address -> [Suburb],[State],[Postcode]', )
 
 file_name_and_path = ""
 selected_column = ""
@@ -76,13 +76,20 @@ layout = [
     ],
     [sg.Text('_' * form_width)],
     [
-        sg.Frame('Column Headings', [[sg.Listbox(key='_COLUMNHEADINGS_', enable_events=True, values=COL_HEADINGS,
-                                                 size=(30, len(COL_HEADINGS)))]], title_color='black',
-                 relief=sg.RELIEF_SUNKEN, tooltip='')
+        sg.Frame('Column Headings',
+                 [[sg.Listbox(key='_COLUMNHEADINGS_', enable_events=True, values=COL_HEADINGS,  size=(30, len(COL_HEADINGS)))]],
+                 title_color='black',  relief=sg.RELIEF_SUNKEN, tooltip='')
         ,
         sg.Frame('Action to Apply',
-                 [[sg.Listbox(values=lb_action_to_apply, size=(form_width - 40, len(lb_action_to_apply)))]],
+                 # [[sg.Listbox(values=lb_action_to_apply, size=(form_width - 40, len(lb_action_to_apply)))]],
+                  [*[[sg.Radio(text, 1) ,] for text in lb_action_to_apply]],
                  title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='')
+
+
+
+
+
+
     ],
     [sg.Text('_' * form_width)],
 
