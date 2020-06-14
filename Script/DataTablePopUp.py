@@ -13,6 +13,9 @@ class DataTablePopUp:
     # fh = DataTablePopUp(data_table_headings, data_table_data)
     def __init__(self, data_table_headings, data_table_data, data_description):
 
+        self.form_width = 120
+        self.debug_font = ("courier", 10)
+
         self.data_description = data_description
         self.data_table_headings = data_table_headings
 
@@ -38,8 +41,11 @@ class DataTablePopUp:
                 auto_size_columns=False,
                 display_row_numbers=True,
                 justification='left',
-                num_rows=min(len(self.data_table_data), 40) ,
+                num_rows=min(len(self.data_table_data), 30) ,
                 alternating_row_color='gray',
+                vertical_scroll_only=False,
+                hide_vertical_scroll=False,
+                font = self.debug_font,
                 key='_DATATABLE_'
                 # tooltip='This is a table'
             )
@@ -54,7 +60,8 @@ class DataTablePopUp:
             [sg.Menu(menu_def, tearoff=False)],
 
             # to update: https://github.com/PySimpleGUI/PySimpleGUI/issues/1307
-            [table]
+            [table],
+            [sg.Text('_' * self.form_width)]
 
         ]
 
