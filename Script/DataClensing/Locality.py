@@ -3,7 +3,6 @@ import os
 import time
 
 
-from DataConverter import *
 from fileHandler import *
 
 class Locality:
@@ -17,37 +16,42 @@ class Locality:
     global file_name
     file_name = 'australian_postcodes.json'
 
-    # l = Locality(file_name_and_path)
-    def __init__(self, window, file_name_and_path, column_to_resolve):
+    # l = DataClensing(file_name_and_path)
+    def __init__(self, window, DATA_GRID_COL_HEADINGS , DATA_GRID_NESTED_LIST, column_to_resolve):
 
         start_time = time.time()
 
-        self.file_name_and_path = file_name_and_path
+        self.display_ever_x_rows = 40
+
+        # self.file_name_and_path = file_name_and_path
         self.column_to_resolve = column_to_resolve
         self.window = window
 
-        fh = fileHandler(file_name_and_path)
+        # fh = fileHandler(file_name_and_path)
 
-        self.column_headings = fh.column_headings
+        self.column_headings = DATA_GRID_COL_HEADINGS
+        self.temp_data_nested_list = DATA_GRID_NESTED_LIST
+        self.column_pos_to_resolve = self.obtainColumnPositions()
         self.appendColumnHeadings()
 
-        # Ultimatly we want to create an 'array' containing the data to return to present on thh main form.
-        self.data_list = []
-        self.data_list = self.read_file()
-
-        # This is really important, although, it is a long winded operation to do so.
-
-        self.data_nested_list = DataConverter(self.data_list).data_nested_list
+        #  This is the  new data_nested_list.
+        self.data_nested_list = self.process()
 
         self.time_to_execute_seconds = (time.time() - start_time)
 
     def updateStatusBar(self,  message, override_previous):
-        # if override_previous == True:
-        self.window.FindElement('_STATUSBAR_').Update('')
-        self.window.Refresh()
+
         self.window.FindElement('_STATUSBAR_').Update(message, append=False)
         self.window.Refresh()
 
+    def obtainColumnPositions(self):
+        pos = 0
+        for col in self.column_headings:
+            if col == self.column_to_resolve:
+                print ('l',col, 'p', pos)
+                return pos
+
+            pos += 1
 
     def appendColumnHeadings(self):
 
@@ -55,34 +59,67 @@ class Locality:
             self.column_headings.append(self.column_to_resolve + "_" + column)
 
 
-    def read_file(self):
 
-        data_list = []
+    def process(self):
+        record = []
 
-        with open(self.file_name_and_path, "r", encoding='utf-8-sig') as file_to_use:
-            csv_dict_reader = DictReader(file_to_use)
+        cur_loop_pos = 0
 
-            for row in csv_dict_reader:
-                start_time = time.time()
-                la = self.resolveAddress(row[self.column_to_resolve])
+        for row in self.temp_data_nested_list:
 
-                for column in locality_columns_to_append:
-                    # self.column_headings.append(column)
+            start_time = time.time()
+            la = self.resolveAddress(row[self.column_pos_to_resolve])
 
-                    if la is not None:
-                        row[self.column_to_resolve + "_" + column] = la[column]
-                    else:
-                        row[self.column_to_resolve + "_" + column] = ''
+            for column in locality_columns_to_append:
+
+                if la is not None:
+                    row.append (la.get(column))
+                else:
+                    row.append ('')
 
 
-                # if la is not None:
-                #     print(row[self.column_to_resolve] , ' : ', row)
-                self.updateStatusBar(la, True)
+            if cur_loop_pos % self.display_ever_x_rows !=  0:
+                self.updateStatusBar(row, True)
 
-                row['seconds'] = (time.time() - start_time)
-                data_list.append(json.loads(json.dumps(row)))
+            cur_loop_pos +=1
+            row.append(time.time() - start_time)
 
-        return(data_list)
+            record.append(row)
+
+        return(record)
+
+    # def read_file(self):
+    #
+    #     data_list = []
+    #
+    #     cur_loop_pos = 0
+    #
+    #     with open(self.file_name_and_path, "r", encoding='utf-8-sig') as file_to_use:
+    #         csv_dict_reader = DictReader(file_to_use)
+    #
+    #         for row in csv_dict_reader:
+    #             start_time = time.time()
+    #             la = self.resolveAddress(row[self.column_to_resolve])
+    #
+    #             for column in locality_columns_to_append:
+    #                 # self.column_headings.append(column)
+    #
+    #                 if la is not None:
+    #                     row[self.column_to_resolve + "_" + column] = la[column]
+    #                 else:
+    #                     row[self.column_to_resolve + "_" + column] = ''
+    #
+    #
+    #             # if la is not None:
+    #             #     print(row[self.column_to_resolve] , ' : ', row)
+    #             if cur_loop_pos % self.display_ever_x_rows !=  0:
+    #                 self.updateStatusBar(la, True)
+    #
+    #             row['seconds'] = (time.time() - start_time)
+    #             data_list.append(json.loads(json.dumps(row)))
+    #             cur_loop_pos += 1
+    #
+    #     return(data_list)
 
 
     def resolveAddress(self,provided_address):
