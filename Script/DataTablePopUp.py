@@ -26,7 +26,7 @@ class DataTablePopUp:
 
     def obtainScreenDetails(self):
         # These tweo will be closley linked
-        import ScreenDetails as sd
+        from ext import ScreenDetails as sd
         self.screen_details = sd.ScreenDetails().monitor_dictionary
 
     def containment(self):
