@@ -63,27 +63,6 @@ class fileHandler:
 
         return default
 
-    # https://snakify.org/en/lessons/two_dimensional_lists_arrays/
-
-    #TODO:  Deprecated in favour of a class.
-    # def createNestedList(self):
-    #
-    #     # if isinstance(self.data_list , list):
-    #     #     print('list of..')
-    #
-    #     record = []
-    #
-    #     for n in self.data_list_of_dictionaries:
-    #         # if isinstance(n, dict):
-    #         #     print('dict of ...')
-    #         # https://www.ict.social/python/basics/multidimensional-lists-in-python
-    #         column = []
-    #         for value in list(n.values()):
-    #             column.append(value)
-    #
-    #         record.append(column)
-    #
-    #     return record
 
     def obtainFileDetails(self):
         import os
