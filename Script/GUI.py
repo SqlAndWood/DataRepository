@@ -36,8 +36,9 @@ DATA_GRID_NESTED_LIST = []
 
 debug_font = ("courier", 10)
 
-tempFile = "I:\git\WordToExcel\Data\\20200602\\"
-
+# TODO: Relative Referencing required.
+# tempFile = "I:\git\WordToExcel\Data\\20200602\\"
+tempFile = "B:\/Users\wooda01.ADMINSRVAD\git\Applications\DataRepository\Data"
 
 def updateStatusBar(window, message, override_previous):
     if override_previous == True:
@@ -193,6 +194,7 @@ while True:
 
     elif event == '_SAVEDATA_':
 
+        # TODO : Convert this to relative referencing. This folder is a natural folder.
         example = "I:\git\WordToExcel\Data\\20200615\\t.csv"
 
 
