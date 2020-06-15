@@ -103,7 +103,7 @@ DECLARE @SecondsPerDay INT = (SELECT Datediff(s, @StartTime, @EndTime) + 1);
 ;WITH MyFullDateRange AS 
 (
  SELECT TOP (@SecondsPerDay) CAST(DATEADD(s, Number, @StartTime) AS TIME) AS SecondsInTime
- FROM dbo.[Numbers]
+ FROM dbo.[dimNumbers]
 ) 
 INSERT INTO  dbo.dimTime
    ([Time] ,[TimeAMPM] ,[24Hour] ,[24HourAMPM] ,[HourNumber] ,[24HourNumber] ,[MinuteNumber] ,[SecondNumber] ,[HourDescription] ,[24HourDescription] ,[MinuteDescription] ,[SecondDescription] ,[AMPM] ,[SecondsFromMidnight] ,[SeondsToMidnight] ,[Time2]
