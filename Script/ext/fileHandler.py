@@ -1,5 +1,9 @@
 from csv import DictReader
 import json
+import io
+import chardet
+import codecs
+import os
 
 class fileHandler:
 
@@ -18,33 +22,50 @@ class fileHandler:
 
     def obtainColumnHeadings(self):
 
-        # with open(self.file_name_and_path, "r", encoding='utf-8-sig') as file_to_use:
-        with open(self.file_name_and_path, "r") as file_to_use:
+        encoding = self.detect_encoding_by_bom('')
+
+        with open(self.file_name_and_path, "r", encoding=encoding) as file_to_use:
+
             csv_dict_reader = DictReader(file_to_use)
 
             return csv_dict_reader.fieldnames
 
 
+
     def read_file(self):
 
         data_list = []
-        try:
-            with open(self.file_name_and_path, "r", encoding='utf-8-sig') as file_to_use:
-                csv_dict_reader = DictReader(file_to_use)
 
-        except:
+        # only one in 100 files needs this, but it is enough to cause mischief if it is not implemented.
+        encoding = self.detect_encoding_by_bom( '')
 
-            with open(self.file_name_and_path, "r") as file_to_use:
-                csv_dict_reader = DictReader(file_to_use)
+        with open(self.file_name_and_path, "r", encoding=encoding) as file_to_use:
+            csv_dict_reader = DictReader(file_to_use)
 
-            #this may not be necessary
             for row in csv_dict_reader:
-                # print(row)
+
                 data_list.append(json.loads(json.dumps(row)))
 
 
         # might be able to return csv_dict_reader ??
         return(data_list)
+
+    def  detect_encoding_by_bom(self, default):
+
+        with open(self.file_name_and_path, 'rb') as f:
+            raw = f.read(4)  # will read less if the file is smaller
+
+        # BOM_UTF32_LE's start is equal to BOM_UTF16_LE so need to try the former first
+        for enc, boms in \
+                ('utf-8-sig', (codecs.BOM_UTF8,)), \
+                ('utf-32', (codecs.BOM_UTF32_LE, codecs.BOM_UTF32_BE)), \
+                ('utf-16', (codecs.BOM_UTF16_LE, codecs.BOM_UTF16_BE)):
+
+            if any(raw.startswith(bom) for bom in boms):
+                return enc
+
+        return default
+
 
     # https://snakify.org/en/lessons/two_dimensional_lists_arrays/
 
