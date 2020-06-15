@@ -30,3 +30,8 @@ class DataConverter:
         for column in nested_list:
             for item in column:
                 print(item, end=" ")
+
+    # return a column from within an multimensional array.
+    # https://stackoverflow.com/questions/903853/how-do-you-extract-a-column-from-a-multi-dimensional-array
+    def column(self, nested_list, column_number):
+        return [row[column_number] for row in nested_list]

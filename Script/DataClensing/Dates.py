@@ -6,16 +6,16 @@ import pandas as pd
 from ext.fileHandler import *
 
 
-class Locality:
+class Dates:
     # unsure how, but the globals should probably be stored in a seperate JSON file?
     global folder_location
     folder_location = "..\Data\\"
 
     global file_name
-    file_name = 'australian_postcodes.json'
+    file_name = 'Dates.json'
 
     global locality_columns_to_append
-    locality_columns_to_append = ['locality_cleansed', 'state_cleansed', 'postcode_cleansed']
+    locality_columns_to_append = ['date_cleansed']
 
     # l = DataClensing(file_name_and_path)
     def __init__(self, window, DATA_GRID_COL_HEADINGS, DATA_GRID_NESTED_LIST, column_to_resolve):
@@ -32,8 +32,9 @@ class Locality:
         self.temp_data_nested_list = DATA_GRID_NESTED_LIST
         self.column_pos_to_resolve = self.obtainColumnPositions()
         self.appendColumnHeadings()
-        self.data_nested_list = self.process()
+        # self.data_nested_list = self.process()
         self.time_to_execute_seconds = (time.time() - start_time)
+
 
     def updateStatusBar(self, message, override_previous):
 
@@ -62,7 +63,7 @@ class Locality:
         for row in self.temp_data_nested_list:
 
             start_time = time.time()
-            la = self.resolveAddress(row[self.column_pos_to_resolve])
+            la = self.resolveDate(row[self.column_pos_to_resolve])
 
             for column in locality_columns_to_append:
 
@@ -81,16 +82,16 @@ class Locality:
 
         return (record)
 
-    def resolveAddress(self, provided_address):
+
+    def resolveDate(self, provided_date):
 
         start_time = time.time()
 
-        australian_location_data = self.loadAustralianLocationData()
+        Date_data = self.loadDateData()
 
-        dict_of_matched_locations = self.createDictionaryOfMatchedLocationData(australian_location_data,
-                                                                               provided_address)
+        dict_of_matched_locations = self.createDictionaryOfMatchedLocationData(Date_data, provided_date)
 
-        likely_address = self.obtainSingleMostLikelyAddress(dict_of_matched_locations)
+        likely_address = self.obtainSingleMostLikelyDate(dict_of_matched_locations)
 
         if likely_address is not None:
             likely_address['seconds'] = (time.time() - start_time)
@@ -112,56 +113,56 @@ class Locality:
             return json.load(json_file)
 
     # this does not prefernce a SA key over any other state/territory
-    def createDictionaryOfMatchedLocationData(self, dict_location, provided_address):
+    def createDictionaryOfMatchedDatesData(self, dict_date, provided_date):
 
         dic_identified = []
 
-        for individual_key in dict_location:
+        for individual_key in dict_date:
 
             score = 0.0
 
-            individual_key['location_len'] = self.observeLocation(provided_address, individual_key)
-
-            # temporary while I figure out how I'd like the algorithm to be.
-            if individual_key.get('locality').upper() in provided_address.upper() and individual_key.get(
-                    'postcode') in provided_address.upper() and individual_key.get('state') == 'SA':
-                score += 1.0
-
-            if individual_key.get('locality').upper() in provided_address.upper() and individual_key.get(
-                    'postcode') == 'SA':
-                score += 1.0
-
-            if individual_key.get(
-                    'locality').upper() in provided_address.upper():  # and individual_key.get('postcode') in provided_address.upper():
-                score += 1.0
-
-            if individual_key.get('postcode').upper() in provided_address.upper():
-                score += 0.5
-
-            if provided_address.upper() in 'SA':
-                score += 0.5
-
-            if score > 1:
-                individual_key['score'] = score
-
-                dic_identified.append(individual_key)
+            # individual_key['location_len'] = self.observeLocation(provided_date, individual_key)
+            #
+            # # temporary while I figure out how I'd like the algorithm to be.
+            # if individual_key.get('locality').upper() in provided_date.upper() and individual_key.get(
+            #         'postcode') in provided_date.upper() and individual_key.get('state') == 'SA':
+            #     score += 1.0
+            #
+            # if individual_key.get('locality').upper() in provided_date.upper() and individual_key.get(
+            #         'postcode') == 'SA':
+            #     score += 1.0
+            #
+            # if individual_key.get(
+            #         'locality').upper() in provided_date.upper():  # and individual_key.get('postcode') in provided_address.upper():
+            #     score += 1.0
+            #
+            # if individual_key.get('postcode').upper() in provided_date.upper():
+            #     score += 0.5
+            #
+            # if provided_date.upper() in 'SA':
+            #     score += 0.5
+            #
+            # if score > 1:
+            #     individual_key['score'] = score
+            #
+            #     dic_identified.append(individual_key)
 
         return dic_identified
 
     # This is a fuzzy adress match. Only one address is to be matched, as the most likely match.
     # matching the incorrect address is not a key issue here.
-    def obtainSingleMostLikelyAddress(self, dict_ofMatchedLocations):
+    def obtainSingleMostLikelyDate(self, dict_ofMatchedDates):
 
-        dic_sortedOnScore = sorted(dict_ofMatchedLocations, key=lambda i: (i['score'], i['location_len']), reverse=True)
+        dic_sortedOnScore = sorted(dict_ofMatchedDates, key=lambda i: (i['score'], i['location_len']), reverse=True)
 
         for sk in dic_sortedOnScore:
             # return the first found Address.
             return sk
             break
 
-    def observeLocation(self, provided_address, individual_key):
+    def observeDate(self, provided_date, individual_key):
 
-        if individual_key.get('locality').upper() in provided_address.upper():
+        if individual_key.get('locality').upper() in provided_date.upper():
             return len(individual_key.get('locality').upper())
         else:
             return -1

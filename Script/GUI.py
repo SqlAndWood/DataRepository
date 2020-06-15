@@ -3,9 +3,13 @@
 
 import PySimpleGUI as sg
 
+import csv
+
 from ext import ScreenDetails as sd
 # in house created code reference
 from DataClensing.Locality import Locality
+from DataClensing.Dates import Dates
+
 from ext.fileHandler import *
 
 sd = sd.ScreenDetails().monitor_dictionary
@@ -95,8 +99,10 @@ layout = [
     [sg.Text('_' * form_width)],
 
     [
-        sg.Submit(key='_SUBMIT_', tooltip='', size=command_button_size), sg.Cancel(size=command_button_size),
-        sg.Submit("View Data", key='_VIEWDATA_', tooltip='', size=command_button_size)
+        sg.Submit(key='_SUBMIT_', tooltip='', size=command_button_size),
+        sg.Cancel(size=command_button_size),
+        sg.Submit("View Data", key='_VIEWDATA_', tooltip='', size=command_button_size),
+        sg.Submit("Save Data", key='_SAVEDATA_', tooltip='', size=command_button_size)
     ],
 
     [sg.Multiline(key='_STATUSBAR_', size=(110, 5), auto_size_text=False, text_color='white',
@@ -114,7 +120,7 @@ window = sg.Window('Data Cleansing').Layout(layout)
 while True:
 
     event, values = window.Read()
-    print(INITIAL_LOAD)
+    # print(INITIAL_LOAD)
     if event is not None:
         # updateEventDisplayBar(window, 'event name: ' + event, False)
         updateEventDisplayBar(window, json.dumps(values), False)
@@ -163,6 +169,8 @@ while True:
 
             window.FindElement('_COLUMNHEADINGS_').Update(values=DATA_GRID_COL_HEADINGS)
             window.FindElement('_COLUMNHEADINGS_').set_size((30, len(DATA_GRID_COL_HEADINGS)))
+
+            # d = Dates(window, DATA_GRID_COL_HEADINGS, DATA_GRID_NESTED_LIST, selected_column)
             # We need a way to deal with a Data set, rather than always opening the file.
 
     elif event == '_COLUMNHEADINGS_':  # if a list item is chosen
@@ -183,7 +191,20 @@ while True:
 
             pass
 
+    elif event == '_SAVEDATA_':
+
+        example = "I:\git\WordToExcel\Data\\20200615\\t.csv"
 
 
+        with open("I:\git\WordToExcel\Data\\20200615\\temp.csv", "w", newline="") as f:
+            writer = csv.writer(f)
+
+            writer.writerow(DATA_GRID_COL_HEADINGS)
+
+            for record in DATA_GRID_NESTED_LIST:
+                # print(record)
+                writer.writerow(record)
+
+        pass
 
 window.Close()

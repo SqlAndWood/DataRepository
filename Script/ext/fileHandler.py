@@ -18,7 +18,8 @@ class fileHandler:
 
     def obtainColumnHeadings(self):
 
-        with open(self.file_name_and_path, "r",  encoding='utf-8-sig') as file_to_use:
+        # with open(self.file_name_and_path, "r", encoding='utf-8-sig') as file_to_use:
+        with open(self.file_name_and_path, "r") as file_to_use:
             csv_dict_reader = DictReader(file_to_use)
 
             return csv_dict_reader.fieldnames
@@ -27,9 +28,14 @@ class fileHandler:
     def read_file(self):
 
         data_list = []
+        try:
+            with open(self.file_name_and_path, "r", encoding='utf-8-sig') as file_to_use:
+                csv_dict_reader = DictReader(file_to_use)
 
-        with open(self.file_name_and_path, "r", encoding='utf-8-sig') as file_to_use:
-            csv_dict_reader = DictReader(file_to_use)
+        except:
+
+            with open(self.file_name_and_path, "r") as file_to_use:
+                csv_dict_reader = DictReader(file_to_use)
 
             #this may not be necessary
             for row in csv_dict_reader:
