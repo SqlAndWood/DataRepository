@@ -12,10 +12,17 @@ sd = sd.ScreenDetails().monitor_dictionary
 form_width = 120
 # PySimpleGUI element sizes refer to (x, y) x = Character width, y = Number of characters tall
 
+INITIAL_LOAD = True
+
+
 # global visible_for_debug
 visible_for_debug = True
 COL_HEADINGS = ('', '')
-lb_action_to_apply = ('Full Address -> [Suburb],[State],[Postcode]', )
+
+ACTION_LIST = list(('Take no action', 'Full Address -> [Suburb],[State],[Postcode]', ))
+ACTION_KEYS = list(('-A1-', '-A2-', '-A3-'))
+
+
 
 file_name_and_path = ""
 selected_column = ""
@@ -82,19 +89,15 @@ layout = [
         ,
         sg.Frame('Action to Apply',
                  # [[sg.Listbox(values=lb_action_to_apply, size=(form_width - 40, len(lb_action_to_apply)))]],
-                  [*[[sg.Radio(text, 1) ,] for text in lb_action_to_apply]],
-                 title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='')
-
-
-
-
-
-
+               [*[[sg.Radio(value, 1 , enable_events=True , default=False, key=key ) ] for value, key in zip(ACTION_LIST, ACTION_KEYS) ]],
+               title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='')
     ],
     [sg.Text('_' * form_width)],
 
-    [sg.Submit(key='_SUBMIT_', tooltip='', size=command_button_size), sg.Cancel(size=command_button_size),
-     sg.Submit("View Data", key='_VIEWDATA_', tooltip='', size=command_button_size)],
+    [
+        sg.Submit(key='_SUBMIT_', tooltip='', size=command_button_size), sg.Cancel(size=command_button_size),
+        sg.Submit("View Data", key='_VIEWDATA_', tooltip='', size=command_button_size)
+    ],
 
     [sg.Multiline(key='_STATUSBAR_', size=(110, 5), auto_size_text=False, text_color='white',
                   background_color='lightslategray', visible=visible_for_debug, font=debug_font)],
@@ -111,9 +114,9 @@ window = sg.Window('Data Cleansing').Layout(layout)
 while True:
 
     event, values = window.Read()
-
+    print(INITIAL_LOAD)
     if event is not None:
-        updateEventDisplayBar(window, 'event name: ' + event, False)
+        # updateEventDisplayBar(window, 'event name: ' + event, False)
         updateEventDisplayBar(window, json.dumps(values), False)
 
     # This makes the app stop when you press X (close)
@@ -179,5 +182,8 @@ while True:
                            data_description=file_containing_data.file_name)
 
             pass
+
+
+
 
 window.Close()
