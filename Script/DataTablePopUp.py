@@ -35,9 +35,9 @@ class DataTablePopUp:
         table = sg.Table(
             values=self.data_table_data,
             headings=self.data_table_headings,
-            max_col_width=25,
+            max_col_width=150,
             background_color='lightblue',
-            auto_size_columns=False,
+            auto_size_columns=True,
             display_row_numbers=True,
             justification='left',
             num_rows=min(len(self.data_table_data), 30),
