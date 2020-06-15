@@ -1,97 +1,25 @@
 
 /*
 
+I suggest you use Visual Studio Code to run this
 
-File menu system: Query
-Query Options
-Results > Grid > Change to unlimited
+as SSMS has a terrible side effect of truncating every line at X thousand characters.
 
 */
+select @@SERVERNAME
 
-	SELECT
-	    [DateKey]
+	SELECT 
+	    [DateKey] AS [CalendarDate_Key]
  
       ,[CalendarDate]
-      ,[ActualDateYMD]
+		,[ActualDateDMY] AS DateDMY_Key
+		,LEFT([ActualDateDMY], 2) + '/' + RIGHT(LEFT([ActualDateDMY], 4), 2) + '/'+ RIGHT([ActualDateDMY], 4) AS DateDMY
       
-      ,[ActualDateDMY]
-    
-     
-      ,[ActualDateShortDescription]
-
-      ,[CalendarYearNumber]
-      ,[CalendarYearShortDescription]
-
-      ,[CalendarHalfYearNumber]
-      ,[CalendarHalfYearShortDescription]
-  
-      ,[CalendarQuarterNumber]
-      ,[CalendarQuarterShortDescription]
-    
-      ,[CalendarMonthNumber]
-      ,[CalendarMonthName]
-      ,[CalendarMonthAbbreviation]
-      ,[CalendarDayOfMonthNumber]
-
-      ,[CalendarMonthNameAndYearAbbreviated]
-      ,[CalendarMonthNameAndYearFull]
-      ,[CalendarDayName]
-      ,[CalendarDayAbbreviation]
-  
-      ,[CalendarDayOfWeekNumber]
-      
-      ,[CalendarWeekNumber]
-
- 
-      ,[CalendarDayOfYearNumber]
-      ,[CalendarDaySuffixDescription]
-    
-      ,[FirstDayOfMonthFlag]
-      ,[LastDayOfMonthFlag]
-      ,[FirstDayOfMonthDate]
-      ,[LastDayOfMonthDate]
-      ,[LastSundayOfMonth]
-      ,[LastMondayOfMonth]
-      ,[LastTuesdayOfMonth]
-      ,[LastWednesdayOfMonth]
-      ,[LastThursdayOfMonth]
-      ,[LastFridayOfMonth]
-      ,[LastSaturdayOfMonth]
-      ,[FirstDayOfCalendarQuarterFlag]
-      ,[LastDayOfCalendarQuarterFlag]
-      ,[FirstDayOfCalendarQuarterDate]
-      ,[LastDayOfCalendarQuarterDate]
-      ,[FirstDayOfCalendarWeekDate]
-      ,[LastDayOfCalendarWeekDate]
-      ,[FirstDayOfWorkWeek]
-      ,[LastDayOfWorkWeek]
-      ,[FirstDayOfMonth]
-      ,[LastDayOfMonth]
-      ,[FirstDayOfCalendarYear]
-      ,[LastDayOfCalendarYear]
-
-      ,[FinancialYearNumber]
-      ,[FinancialYearShortDescription]
-
-      ,[FinancialYearStartDate]
-      ,[FinancialYearEndDate]
-      ,[FinancialYearQuarterNumber]
-    
-      ,[FinancialYearQuarterNameShortDescription]
-    
-      ,[FinancialYearDayOfYearNumber]
-      ,[FinancialYearWeekOfYearNumber]
-
-      ,[WeekendFlag]
-      ,[WeekdayFlag]
-      ,[IsLeapYear]
-      ,[IsLeapYearDescription]
-      ,[BusinessDayFlag]
-      ,[DaylightSavingsFlag]
-
-      ,[JulianDayNumber]
+   
 	FROM [ReferenceData].[dbo].[dimDate]
-
+	where datekey >= 18900101
+	and datekey <=  20501231
+	
 	ORDER BY datekey
 	
 	FOR JSON AUTO, INCLUDE_NULL_VALUES
