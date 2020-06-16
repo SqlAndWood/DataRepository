@@ -30,7 +30,7 @@ class Configurations:
         self.combo_action_keys = list(('_A1_', '_A2_', '_A3_',))
 
         # PySimpleGUI element sizes refer to (x, y) x = Character width, y = Number of characters tall
-        self.form_width = 120
+        self.form_width = 180
 
         self.look_and_feel = 'Dark Blue 3'
         self.controls_visible_for_debug = True
