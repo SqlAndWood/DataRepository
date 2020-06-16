@@ -18,12 +18,6 @@ class Configurations:
         self.action_list = self.column_heading_list
         self.action_keys = self.column_heading_keys
 
-        # The two combo boxes are populated from this information
-        # a = ['Text','Date', 'DateTime', 'Time', 'Integer','Decimal', 'Boolean']
-        # a.sort()
-
-
-        # self.combo_datatype_list = list( datatype)
         self.combo_datatype_list = self.sortValues( ['Text','Date', 'DateTime', 'Time', 'Integer','Decimal', 'Boolean'])
 
         self.combo_datatype_keys = self.combo_datatype_list
@@ -36,8 +30,6 @@ class Configurations:
 
         self.controls_visible_for_debug = True
         self.controls_debug_font = ("courier", 10)
-
-
 
 
         self.screen_details = sd.ScreenDetails().monitor_dictionary
