@@ -1,19 +1,24 @@
 # https://pysimplegui.readthedocs.io/en/latest/
 # Threading Ideas: https://pysimplegui.trinket.io/demo-programs#/multi-threaded/multi-threaded-long-task-simple
-
 import PySimpleGUI as sg
 
 import csv
 
 from ext import ScreenDetails as sd
+
 # in house created code reference
 from DataClensing.Locality import Locality
-from DataClensing.Dates import Dates
+from applicationSettings import Configurations as config
+
 
 from ext.fileHandler import *
 
+app_config = config.Configurations()
+
+
+
 sd = sd.ScreenDetails().monitor_dictionary
-form_width = 120
+
 # PySimpleGUI element sizes refer to (x, y) x = Character width, y = Number of characters tall
 
 INITIAL_LOAD = True
@@ -23,8 +28,13 @@ INITIAL_LOAD = True
 visible_for_debug = True
 COL_HEADINGS = ('', '')
 
+
+
+
 ACTION_LIST = list(('Take no action', 'Full Address -> [Suburb],[State],[Postcode]', ))
 ACTION_KEYS = list(('-A1-', '-A2-', '-A3-'))
+
+
 
 
 
@@ -72,7 +82,7 @@ layout = [
     #         '1. Select the file to process.\n2. Select the column to deidentify. \n3. Select the method to deidentify.'
     #         '\n4. Select the output file location.')
     # ],
-    [sg.Text('_' * form_width)],
+    [sg.Text('_' * app_config.form_width)],
 
     [
         # https://pypi.org/project/PySimpleGUI/4.0.0/
@@ -86,18 +96,18 @@ layout = [
             target='_FILEBROWSE_'
         )
     ],
-    [sg.Text('_' * form_width)],
+    [sg.Text('_' * app_config.form_width)],
     [
         sg.Frame('Column Headings',
                  [[sg.Listbox(key='_COLUMNHEADINGS_', enable_events=True, values=COL_HEADINGS,  size=(30, len(COL_HEADINGS)))]],
                  title_color='black',  relief=sg.RELIEF_SUNKEN, tooltip='')
         ,
         sg.Frame('Action to Apply',
-                 # [[sg.Listbox(values=lb_action_to_apply, size=(form_width - 40, len(lb_action_to_apply)))]],
+                 # [[sg.Listbox(values=lb_action_to_apply, size=(app_config.form_width - 40, len(lb_action_to_apply)))]],
                [*[[sg.Radio(value, 1 , enable_events=True , default=False, key=key ) ] for value, key in zip(ACTION_LIST, ACTION_KEYS) ]],
                title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='')
     ],
-    [sg.Text('_' * form_width)],
+    [sg.Text('_' * app_config.form_width)],
 
     [
         sg.Submit(key='_SUBMIT_', tooltip='', size=command_button_size),
