@@ -1,50 +1,27 @@
 # https://pysimplegui.readthedocs.io/en/latest/
 # Threading Ideas: https://pysimplegui.trinket.io/demo-programs#/multi-threaded/multi-threaded-long-task-simple
 import PySimpleGUI as sg
-
 import csv
 
-from ext import ScreenDetails as sd
-
 # in house created code reference
+
 from DataClensing.Locality import Locality
 from applicationSettings import Configurations as config
-
-
 from ext.fileHandler import *
 
 app_config = config.Configurations()
 
+# Global Variables -> Do i store them here or in
+DATA_GRID_NESTED_LIST = []   # Represents the full Data pulled back from the 'file'
 
-
-sd = sd.ScreenDetails().monitor_dictionary
-
-# PySimpleGUI element sizes refer to (x, y) x = Character width, y = Number of characters tall
-
-INITIAL_LOAD = True
-
-
-# global visible_for_debug
-visible_for_debug = True
-COL_HEADINGS = ('', '')
-
-
-
-
-ACTION_LIST = list(('Take no action', 'Full Address -> [Suburb],[State],[Postcode]', ))
-ACTION_KEYS = list(('-A1-', '-A2-', '-A3-'))
-
-
-
-
+DATA_GRID_COL_HEADINGS = []  # connects to ListBox: _COLUMN_HEADINGS_
+COLUMN_RENAME_LIST = [] # connects to ListBox: _COLUMN_RENAME_HEADINGS_
+COLUMN_DATATYPE_LIST = [] # connects to ListBox: _COLUMN_DATATYPE_
+COLUMN_ACTION_LIST = [] # connects to ListBox: _COLUMN_ACTION_
 
 file_name_and_path = ""
 selected_column = ""
 
-DATA_GRID_COL_HEADINGS = []
-DATA_GRID_NESTED_LIST = []
-
-debug_font = ("courier", 10)
 
 # TODO: Relative Referencing required.
 # tempFile = "I:\git\WordToExcel\Data\\20200602\\"
@@ -97,15 +74,45 @@ layout = [
         )
     ],
     [sg.Text('_' * app_config.form_width)],
+
     [
+
         sg.Frame('Column Headings',
-                 [[sg.Listbox(key='_COLUMNHEADINGS_', enable_events=True, values=COL_HEADINGS,  size=(30, len(COL_HEADINGS)))]],
+                 [[sg.Listbox(key='_COLUMN_HEADINGS_', enable_events=True, values=app_config.column_heading_list,  size=(30, len(app_config.column_heading_list)))]],
                  title_color='black',  relief=sg.RELIEF_SUNKEN, tooltip='')
         ,
-        sg.Frame('Action to Apply',
-                 # [[sg.Listbox(values=lb_action_to_apply, size=(app_config.form_width - 40, len(lb_action_to_apply)))]],
-               [*[[sg.Radio(value, 1 , enable_events=True , default=False, key=key ) ] for value, key in zip(ACTION_LIST, ACTION_KEYS) ]],
-               title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='')
+
+        sg.Frame('Rename Column',
+                 [[sg.Listbox(key='_COLUMN_RENAME_HEADINGS_', enable_events=True, values=app_config.column_heading_list,  size=(30, len(app_config.column_heading_list)))]],
+                 title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='')
+
+        ,
+        sg.Frame('DataType Column',
+                 [[sg.Listbox(key='_COLUMN_DATATYPE_', enable_events=True, values=app_config.column_heading_list, size=(30, len(app_config.column_heading_list)))]],
+                 title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='')
+        ,
+        sg.Frame('Action to Apply on Column',
+                 [[sg.Listbox(key='_COLUMN_ACTION_', enable_events=True, values=app_config.column_heading_list, size=(30, len(app_config.column_heading_list)))]],
+                 title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='')
+
+    ],
+
+    [
+    sg.Frame('Select Column',
+        [[sg.InputCombo(values='', key='_COMBO_COLUMNNAME_', size=(30,1) )]],
+             title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='')
+    ,
+    sg.Frame('Rename Column',
+        [[sg.InputText( key='_INPUT_COLUMN_RENAME_',size=(30,1) )]],
+             title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='')
+    ,
+    sg.Frame('Select DataType',
+        [[sg.InputCombo(values=app_config.combo_datatype_list, key='_COMBO_DATATYPE_',size=(30,1) )]],
+             title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='')
+    ,
+    sg.Frame('Select Action',
+        [[sg.InputCombo(values=app_config.combo_action_list, key='_COMBO_ACTION_',size=(30,1) )]],
+        title_color = 'black', relief = sg.RELIEF_SUNKEN, tooltip = '')
     ],
     [sg.Text('_' * app_config.form_width)],
 
@@ -117,9 +124,9 @@ layout = [
     ],
 
     [sg.Multiline(key='_STATUSBAR_', size=(110, 5), auto_size_text=False, text_color='white',
-                  background_color='lightslategray', visible=visible_for_debug, font=debug_font)],
+                  background_color='lightslategray', visible=app_config.controls_visible_for_debug, font=app_config.controls_debug_font)],
     [sg.Multiline(key='_EVENTDISPLAYBAR_', size=(110, 2), auto_size_text=False, text_color='white',
-                  background_color='lightslategray', visible=visible_for_debug, font=debug_font)],
+                  background_color='lightslategray', visible=app_config.controls_visible_for_debug, font=app_config.controls_debug_font)],
 
 ]
 
@@ -142,6 +149,8 @@ while True:
 
     if event == '_FILEBROWSE_':
 
+        # This is an intial load for each file.
+
         file_name_and_path = values.get('_FILEBROWSE_')
 
         if len(file_name_and_path) > 0:
@@ -153,8 +162,24 @@ while True:
             DATA_GRID_COL_HEADINGS = file_containing_data.column_headings
             DATA_GRID_NESTED_LIST = file_containing_data.data_nested_list
 
-            window.FindElement('_COLUMNHEADINGS_').Update(values=DATA_GRID_COL_HEADINGS)
-            window.FindElement('_COLUMNHEADINGS_').set_size((30, len(DATA_GRID_COL_HEADINGS)))
+            window.FindElement('_COLUMN_HEADINGS_').Update(values=DATA_GRID_COL_HEADINGS)
+            window.FindElement('_COLUMN_HEADINGS_').set_size((30, len(DATA_GRID_COL_HEADINGS))) #ie, configure Height to the number of Column Headers
+
+            COLUMN_RENAME_LIST = [None] * len(DATA_GRID_COL_HEADINGS) # connects to ListBox: _COLUMN_RENAME_HEADINGS_
+            COLUMN_DATATYPE_LIST = [None] * len(DATA_GRID_COL_HEADINGS) # connects to ListBox: _COLUMN_DATATYPE_
+            COLUMN_ACTION_LIST = [None] * len(DATA_GRID_COL_HEADINGS)  # connects to ListBox: _COLUMN_ACTION_
+
+            window.FindElement('_COLUMN_RENAME_HEADINGS_').Update(values=COLUMN_RENAME_LIST)
+            window.FindElement('_COLUMN_RENAME_HEADINGS_').set_size((30, len(COLUMN_RENAME_LIST))) #ie, configure Height to the number of Column Headers
+
+            window.FindElement('_COLUMN_DATATYPE_').Update(values=COLUMN_DATATYPE_LIST)
+            window.FindElement('_COLUMN_DATATYPE_').set_size((30, len(COLUMN_DATATYPE_LIST))) #ie, configure Height to the number of Column Headers
+
+            window.FindElement('_COLUMN_ACTION_').Update(values=COLUMN_ACTION_LIST)
+            window.FindElement('_COLUMN_ACTION_').set_size((30, len(COLUMN_ACTION_LIST))) #ie, configure Height to the number of Column Headers
+
+
+            window.FindElement('_COMBO_COLUMNNAME_').Update(values=DATA_GRID_COL_HEADINGS)
 
             updateStatusBar(window, 'Column Headings : ' + ', '.join(DATA_GRID_COL_HEADINGS), False)
 
@@ -178,16 +203,23 @@ while True:
 
             updateStatusBar(window, 'Completed processing : ' + str(l.time_to_execute_seconds), False)
 
-            window.FindElement('_COLUMNHEADINGS_').Update(values=DATA_GRID_COL_HEADINGS)
-            window.FindElement('_COLUMNHEADINGS_').set_size((30, len(DATA_GRID_COL_HEADINGS)))
+            window.FindElement('_COLUMN_HEADINGS_').Update(values=DATA_GRID_COL_HEADINGS)
+            window.FindElement('_COLUMN_HEADINGS_').set_size((30, len(DATA_GRID_COL_HEADINGS)))
 
             # d = Dates(window, DATA_GRID_COL_HEADINGS, DATA_GRID_NESTED_LIST, selected_column)
             # We need a way to deal with a Data set, rather than always opening the file.
 
-    elif event == '_COLUMNHEADINGS_':  # if a list item is chosen
+    elif event == '_COLUMN_HEADINGS_':  # if a list item is chosen
 
-        for selected in values['_COLUMNHEADINGS_']:
+        for selected in values['_COLUMN_HEADINGS_']:
             selected_column = selected
+            print(selected)
+
+            # UPDATE THIS -> https://quabr.com/61170768/how-do-i-use-the-value-in-a-list-with-combo-pysimplegui
+            # window.FindElement('_COMBO_COLUMNNAME_').Update((30, len(DATA_GRID_COL_HEADINGS)))
+
+
+
             updateStatusBar(window, 'Selected Heading : ' + str(selected_column), False)
             break
 
