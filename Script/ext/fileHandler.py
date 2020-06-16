@@ -19,7 +19,6 @@ class fileHandler:
 
         self.data_nested_list = DataConverter.DataConverter(self.data_list_of_dictionaries).data_nested_list
 
-        # self.data_nested_list = self.createNestedList()
 
     def obtainColumnHeadings(self):
 
@@ -36,7 +35,6 @@ class fileHandler:
         # only one in 100 files needs this, but it is enough to cause mischief if it is not implemented.
         encoding = self.detect_encoding_by_bom('utf-8')
 
-        print(encoding)
         with open(self.file_name_and_path, "r", encoding=encoding) as file_to_use:
             csv_dict_reader = DictReader(file_to_use)
 
@@ -45,6 +43,7 @@ class fileHandler:
 
         # might be able to return csv_dict_reader ??
         return (data_list)
+
 
     def detect_encoding_by_bom(self, default):
 

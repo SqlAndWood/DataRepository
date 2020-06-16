@@ -4,7 +4,6 @@ import PySimpleGUI as sg
 import csv
 
 # in house created code reference
-
 from DataClensing.Locality import Locality
 from applicationSettings import Configurations as config
 from ext.fileHandler import *
@@ -76,9 +75,8 @@ layout = [
     [sg.Text('_' * app_config.form_width)],
 
     [
-
         sg.Frame('Column Headings',
-                 [[sg.Listbox(key='_COLUMN_HEADINGS_', enable_events=True, values=app_config.column_heading_list,  size=(30, len(app_config.column_heading_list)))]],
+                 [[sg.Listbox(key='_COLUMN_HEADINGS_', enable_events=True, values=app_config.column_heading_list, select_mode='single', size=(30, len(app_config.column_heading_list)))]],
                  title_color='black',  relief=sg.RELIEF_SUNKEN, tooltip='')
         ,
 
@@ -94,12 +92,11 @@ layout = [
         sg.Frame('Action to Apply on Column',
                  [[sg.Listbox(key='_COLUMN_ACTION_', enable_events=True, values=app_config.column_heading_list, size=(30, len(app_config.column_heading_list)))]],
                  title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='')
-
     ],
 
     [
     sg.Frame('Select Column',
-        [[sg.InputCombo(values='', key='_COMBO_COLUMNNAME_', size=(30,1) )]],
+        [[sg.InputCombo(values='', enable_events=True, key='_COMBO_COLUMNNAME_', size=(30,1) )]],
              title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='')
     ,
     sg.Frame('Rename Column',
@@ -114,6 +111,16 @@ layout = [
         [[sg.InputCombo(values=app_config.combo_action_list, key='_COMBO_ACTION_',size=(30,1) )]],
         title_color = 'black', relief = sg.RELIEF_SUNKEN, tooltip = '')
     ],
+
+    [
+        sg.Submit("Update Definition",key='_UPDATE_COLUMN_DEFINITION_', tooltip='STUB', size=command_button_size)
+    ],
+    [sg.Text('_' * app_config.form_width)],
+    [
+        sg.Submit("Process", key='_PROCESS_', tooltip='STUB', size=command_button_size),
+        sg.Submit("UNDO ALL", key='_UNDO_', tooltip='STUB', size=command_button_size)
+    ],
+
     [sg.Text('_' * app_config.form_width)],
 
     [
@@ -159,15 +166,17 @@ while True:
 
             file_containing_data = fileHandler(file_name_and_path)
 
+
+            # this should be a stand alone Function.. re working.
             DATA_GRID_COL_HEADINGS = file_containing_data.column_headings
             DATA_GRID_NESTED_LIST = file_containing_data.data_nested_list
 
             window.FindElement('_COLUMN_HEADINGS_').Update(values=DATA_GRID_COL_HEADINGS)
             window.FindElement('_COLUMN_HEADINGS_').set_size((30, len(DATA_GRID_COL_HEADINGS))) #ie, configure Height to the number of Column Headers
 
-            COLUMN_RENAME_LIST = [None] * len(DATA_GRID_COL_HEADINGS) # connects to ListBox: _COLUMN_RENAME_HEADINGS_
-            COLUMN_DATATYPE_LIST = [None] * len(DATA_GRID_COL_HEADINGS) # connects to ListBox: _COLUMN_DATATYPE_
-            COLUMN_ACTION_LIST = [None] * len(DATA_GRID_COL_HEADINGS)  # connects to ListBox: _COLUMN_ACTION_
+            COLUMN_RENAME_LIST = [''] * len(DATA_GRID_COL_HEADINGS) # connects to ListBox: _COLUMN_RENAME_HEADINGS_
+            COLUMN_DATATYPE_LIST = [''] * len(DATA_GRID_COL_HEADINGS) # connects to ListBox: _COLUMN_DATATYPE_
+            COLUMN_ACTION_LIST = [''] * len(DATA_GRID_COL_HEADINGS)  # connects to ListBox: _COLUMN_ACTION_
 
             window.FindElement('_COLUMN_RENAME_HEADINGS_').Update(values=COLUMN_RENAME_LIST)
             window.FindElement('_COLUMN_RENAME_HEADINGS_').set_size((30, len(COLUMN_RENAME_LIST))) #ie, configure Height to the number of Column Headers
@@ -210,19 +219,31 @@ while True:
             # We need a way to deal with a Data set, rather than always opening the file.
 
     elif event == '_COLUMN_HEADINGS_':  # if a list item is chosen
+        i=0
 
-        for selected in values['_COLUMN_HEADINGS_']:
-            selected_column = selected
-            print(selected)
+        for v in DATA_GRID_COL_HEADINGS:
+            selected_column = values.get('_COLUMN_HEADINGS_')[0]
+            if v == selected_column:
 
-            # UPDATE THIS -> https://quabr.com/61170768/how-do-i-use-the-value-in-a-list-with-combo-pysimplegui
-            # window.FindElement('_COMBO_COLUMNNAME_').Update((30, len(DATA_GRID_COL_HEADINGS)))
+                # https://quabr.com/61170768/how-do-i-use-the-value-in-a-list-with-combo-pysimplegui
+                window.FindElement('_COMBO_COLUMNNAME_').Update(value=selected_column )
+                window.FindElement('_INPUT_COLUMN_RENAME_').Update(value=COLUMN_RENAME_LIST[i] )
+                window.FindElement('_COMBO_DATATYPE_').Update(value=COLUMN_DATATYPE_LIST[i])
+                window.FindElement('_COMBO_ACTION_').Update(value=COLUMN_ACTION_LIST[i])
+
+                updateStatusBar(window, 'Selected Heading : ' + str(selected_column), False)
+                break
+
+            i += 1
 
 
-
-            updateStatusBar(window, 'Selected Heading : ' + str(selected_column), False)
-            break
-
+    elif event == '_COMBO_COLUMNNAME_': #Update associated collumn on click.
+        i = 0
+        for v in DATA_GRID_COL_HEADINGS:
+            if v == values.get('_COMBO_COLUMNNAME_'):
+                window.FindElement('_COLUMN_HEADINGS_').Update(set_to_index=i)
+                break
+            i += 1
 
     elif event == '_VIEWDATA_':
 
@@ -248,6 +269,33 @@ while True:
             for record in DATA_GRID_NESTED_LIST:
                 # print(record)
                 writer.writerow(record)
+
+        pass
+
+    elif event == '_UPDATE_COLUMN_DEFINITION_':
+
+        i = 0
+        for v in DATA_GRID_COL_HEADINGS:
+            if v == values.get('_COMBO_COLUMNNAME_'):
+
+                rename =  values.get('_INPUT_COLUMN_RENAME_')
+                data_type = values.get('_COMBO_DATATYPE_')
+                action_to_perform = values.get('_COMBO_ACTION_')
+
+                COLUMN_RENAME_LIST[i] = rename  # connects to ListBox: _COLUMN_RENAME_HEADINGS_
+                COLUMN_DATATYPE_LIST[i] = data_type  # connects to ListBox: _COLUMN_DATATYPE_
+                COLUMN_ACTION_LIST[i] = action_to_perform  # connects to ListBox: _COLUMN_ACTION_
+
+                window.FindElement('_COLUMN_RENAME_HEADINGS_').Update(values=COLUMN_RENAME_LIST)
+
+                window.FindElement('_COLUMN_DATATYPE_').Update(values=COLUMN_DATATYPE_LIST)
+
+                window.FindElement('_COLUMN_ACTION_').Update(values=COLUMN_ACTION_LIST)
+
+                window.FindElement('_COMBO_COLUMNNAME_').Update(values=DATA_GRID_COL_HEADINGS)
+
+                break
+            i += 1
 
         pass
 
