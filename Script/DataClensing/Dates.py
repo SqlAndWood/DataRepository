@@ -35,7 +35,6 @@ class Dates:
         # self.data_nested_list = self.process()
         self.time_to_execute_seconds = (time.time() - start_time)
 
-
     def updateStatusBar(self, message, override_previous):
 
         self.window.FindElement('_STATUSBAR_').Update(message, append=False)
@@ -82,7 +81,6 @@ class Dates:
 
         return (record)
 
-
     def resolveDate(self, provided_date):
 
         start_time = time.time()
@@ -118,7 +116,6 @@ class Dates:
         dic_identified = []
 
         for individual_key in dict_date:
-
             score = 0.0
 
             # individual_key['location_len'] = self.observeLocation(provided_date, individual_key)

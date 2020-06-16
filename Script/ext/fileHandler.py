@@ -4,6 +4,7 @@ from csv import DictReader
 
 from ext import DataConverter
 
+
 class fileHandler:
 
     # fh = fileHandler(file_name_and_path)
@@ -18,7 +19,6 @@ class fileHandler:
         self.data_list_of_dictionaries = self.read_file()
 
         self.data_nested_list = DataConverter.DataConverter(self.data_list_of_dictionaries).data_nested_list
-
 
     def obtainColumnHeadings(self):
 
@@ -44,7 +44,6 @@ class fileHandler:
         # might be able to return csv_dict_reader ??
         return (data_list)
 
-
     def detect_encoding_by_bom(self, default):
 
         with open(self.file_name_and_path, 'rb') as f:
@@ -61,7 +60,6 @@ class fileHandler:
                     return enc
 
         return default
-
 
     def obtainFileDetails(self):
         import os
