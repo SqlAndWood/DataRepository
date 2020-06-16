@@ -43,17 +43,17 @@ layout = [
                  title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='')
         ,
         sg.Frame('Rename Column',
-                 [[sg.Listbox(key='_COLUMN_RENAME_HEADINGS_', enable_events=True, values=app_config.column_heading_list,
+                 [[sg.Listbox(key='_COLUMN_RENAME_HEADINGS_', enable_events=False, values=app_config.column_heading_list,
                               size=(30, len(app_config.column_heading_list)))]],
                  title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='')
         ,
         sg.Frame('DataType Column',
-                 [[sg.Listbox(key='_COLUMN_DATATYPE_', enable_events=True, values=app_config.column_heading_list,
+                 [[sg.Listbox(key='_COLUMN_DATATYPE_', enable_events=False, values=app_config.column_heading_list,
                               size=(30, len(app_config.column_heading_list)))]],
                  title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='')
         ,
         sg.Frame('Action to Apply on Column',
-                 [[sg.Listbox(key='_COLUMN_ACTION_', enable_events=True, values=app_config.column_heading_list,
+                 [[sg.Listbox(key='_COLUMN_ACTION_', enable_events=False, values=app_config.column_heading_list,
                               size=(30, len(app_config.column_heading_list)))]],
                  title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='')
     ],
@@ -61,19 +61,19 @@ layout = [
     [
         sg.Frame('Select Column',
                  [[sg.InputCombo(values='', enable_events=True, key='_COMBO_COLUMNNAME_', size=(30, 1))]],
-                 title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='')
+                 title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='', size=(36, 1))
         ,
         sg.Frame('Rename Column',
-                 [[sg.InputText(key='_INPUT_COLUMN_RENAME_', size=(30, 1))]],
-                 title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='')
+                 [[sg.InputText(key='_INPUT_COLUMN_RENAME_', change_submits=True, size=(30, 1))]],
+                 title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='', size=(36, 1))
         ,
         sg.Frame('Select DataType',
-                 [[sg.InputCombo(values=app_config.combo_datatype_list, key='_COMBO_DATATYPE_', size=(30, 1))]],
-                 title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='')
+                 [[sg.InputCombo(values=app_config.combo_datatype_list, key='_COMBO_DATATYPE_', change_submits=True, size=(30, 1))]],
+                 title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='', size=(36, 1))
         ,
         sg.Frame('Select Action',
-                 [[sg.InputCombo(values=app_config.combo_action_list, key='_COMBO_ACTION_', size=(30, 1))]],
-                 title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='')
+                 [[sg.InputCombo(values=app_config.combo_action_list, key='_COMBO_ACTION_', change_submits=True, size=(30, 1))]],
+                 title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='', size=(36, 1))
     ],
     [
         sg.Submit("Update Definition", key='_UPDATE_COLUMN_DEFINITION_', tooltip='STUB', size=command_button_size)
