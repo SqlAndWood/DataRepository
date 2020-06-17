@@ -1,6 +1,4 @@
-import csv
 import time
-
 
 from DataClensing.Locality import Locality
 from DataTablePopUp import *
@@ -13,14 +11,12 @@ class FormEvents:
 
     # fh = FormEvents()
     def __init__(self,  layout, app_config):
+        # DO NOT SET WINDOW to self.window! for some reason this really slows down the GUI responsiveness.
         window = sg.Window('Data Cleansing').Layout(layout)
+
         self.app_config = app_config
-        self.resetGlobalVariabiles()
-        self.InstantiateForm(window)
 
-    def resetGlobalVariabiles(self):
         self.file_name_and_path = ""
-
         self.selected_column_by_integer = 0
         self.selected_column = ""
 
@@ -29,6 +25,8 @@ class FormEvents:
         self.COLUMN_RENAME_LIST = []  # connects to ListBox: _COLUMN_RENAME_HEADINGS_
         self.COLUMN_DATATYPE_LIST = []  # connects to ListBox: _COLUMN_DATATYPE_
         self.COLUMN_ACTION_LIST = []  # connects to ListBox: _COLUMN_ACTION_
+
+        self.InstantiateForm(window)
 
 
     def OpenFileAndDisplay(self,window, values):
@@ -116,20 +114,13 @@ class FormEvents:
             DataTablePopUp(data_table_headings=self.DATA_GRID_COL_HEADINGS, data_table_data=self.DATA_GRID_NESTED_LIST,
                            data_description=self.file_containing_data.file_name)
         else:
-            print('pop')
-
             from Form import GenericPopUp as gpu
-            gpu.GenericPopUp(
-                self.app_config,
-                window_title = "No Data to View",
-                statement = 'Please select a file prior to viewing associated data.'
+            gpu.GenericPopUp (
+                                self.app_config,
+                                window_title = "No Data to View",
+                                statement = 'Please select a file prior to viewing associated data.'
+                             )
 
-            )
-
-            # from Form import FormEvents as fe
-            # f = fe.FormEvents(layout, app_config)
-
-            pass # create a small popup stating
 
     # this needs to be re-written and given to a different class.
     def SubmitDataForProcessing(self,window):
@@ -153,18 +144,6 @@ class FormEvents:
 
             # d = Dates(window, DATA_GRID_COL_HEADINGS, DATA_GRID_NESTED_LIST, self.selected_column)
             # We need a way to deal with a Data set, rather than always opening the file.
-
-
-
-
-    # this should be in a different class
-    def SaveDataTableToFile(self):
-        # TODO : Convert this to relative referencing. This folder is a natural folder.
-        with open("I:\git\WordToExcel\Data\\20200615\\temp.csv", "w", newline="") as f:
-            writer = csv.writer(f)
-            writer.writerow(self.DATA_GRID_COL_HEADINGS)
-            for record in self.DATA_GRID_NESTED_LIST:
-                writer.writerow(record)
 
 
     def InstantiateForm(self,window):
@@ -229,7 +208,7 @@ class FormEvents:
 
             # at any time you may save the data you have compiled.
             elif event == '_SAVEDATA_':
-                self.SaveDataTableToFile()
+                self.file_containing_data.SaveTempFile("temp.csv", self.DATA_GRID_COL_HEADINGS, self.DATA_GRID_NESTED_LIST)
 
             # at any time, you may view the data you have compiled.
             elif event == '_VIEWDATA_':
