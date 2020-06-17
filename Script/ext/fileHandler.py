@@ -1,9 +1,10 @@
 import codecs
 import json
+import csv
+
 from csv import DictReader
-
 from ext import DataConverter
-
+from ext import FileDetails
 
 class fileHandler:
 
@@ -13,9 +14,13 @@ class fileHandler:
         self.file_name_and_path = file_name_and_path
 
         self.column_headings = self.obtainColumnHeadings()
+        self.fd = FileDetails.FileDetails(self.file_name_and_path )
+        # Not sure these three are required.
+        # self.file_statistics = self.fd.file_statistics
+        # self.file_size = self.fd.file_size
+        self.file_name = self.fd.file_name
 
-        self.obtainFileDetails()
-
+        # print(self.fd.file_directory_path)
         self.data_list_of_dictionaries = self.read_file()
 
         self.data_nested_list = DataConverter.DataConverter(self.data_list_of_dictionaries).data_nested_list
@@ -61,10 +66,13 @@ class fileHandler:
 
         return default
 
-    def obtainFileDetails(self):
-        import os
 
-        self.file_statistics = os.stat(self.file_name_and_path)
+    # Probably not a long term solution. Save file to the same folder of original file.
+    def SaveTempFile(self, file_name, headings, nested_list):
+        file_to_save = self.fd.file_directory_path + file_name
+        with open(file_to_save, "w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(headings)
+            for record in nested_list:
+                writer.writerow(record)
 
-        self.file_size = self.file_statistics.st_size
-        self.file_name = os.path.basename(self.file_name_and_path)
