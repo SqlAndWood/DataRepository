@@ -1,5 +1,6 @@
 import time
 
+from Form import GenericPopUp as gpu
 from DataClensing.Locality import Locality
 from DataTablePopUp import *
 from ext import fileHandler as fh
@@ -12,8 +13,8 @@ class FormEvents:
     # fh = FormEvents()
     def __init__(self,  layout, app_config):
         # DO NOT SET WINDOW to self.window! for some reason this really slows down the GUI responsiveness.
-        window = sg.Window('Data Cleansing').Layout(layout)
-
+        # window = sg.Window('Data Cleansing').Layout(layout)
+        window = sg.Window('Data Cleansing', layout, finalize=True)
         self.app_config = app_config
 
         self.file_name_and_path = ""
@@ -39,14 +40,14 @@ class FormEvents:
             self.DATA_GRID_NESTED_LIST = self.file_containing_data.data_nested_list
 
             window['_FILETOPROCESS_'](text_color='black') # short hand for updating an element.
-            window['_FILETOPROCESS_'](self.file_name_and_path)
+            window['_FILETOPROCESS_'](self.file_name_and_path)# short hand for updating an element.
 
             self.COLUMN_RENAME_LIST = self.DATA_GRID_COL_HEADINGS.copy()  # connects to ListBox: _COLUMN_RENAME_HEADINGS_
             self.COLUMN_DATATYPE_LIST = [''] * len(self.DATA_GRID_COL_HEADINGS)  # connects to ListBox: _COLUMN_DATATYPE_
             self.COLUMN_ACTION_LIST = [''] * len(self.DATA_GRID_COL_HEADINGS)  # connects to ListBox: _COLUMN_ACTION_
 
             # Load the Combo box with array of values.
-            window.FindElement('_COMBO_COLUMNNAME_').Update(values=self.DATA_GRID_COL_HEADINGS)
+            window.FindElement('_COMBO_COLUMNNAME_').Update(values=self.DATA_GRID_COL_HEADINGS) #Long hand way to update an element.
 
             # this is an ambiguous function name; however I am returning the current list information to the Form fo rthe user to know what they have selected.
             self.UpdateListBoxes(window)
@@ -114,13 +115,22 @@ class FormEvents:
             DataTablePopUp(data_table_headings=self.DATA_GRID_COL_HEADINGS, data_table_data=self.DATA_GRID_NESTED_LIST,
                            data_description=self.file_containing_data.file_name)
         else:
-            from Form import GenericPopUp as gpu
+
             gpu.GenericPopUp (
                                 self.app_config,
                                 window_title = "No Data to View",
                                 statement = 'Please select a file prior to viewing associated data.'
                              )
 
+    def SaveData(self):
+        if self.file_name_and_path != "":
+            self.file_containing_data.SaveTempFile("temp.csv", self.DATA_GRID_COL_HEADINGS, self.DATA_GRID_NESTED_LIST)
+        else:
+            gpu.GenericPopUp(
+                self.app_config,
+                window_title="No Data to Save",
+                statement='Please select a file prior to saving associated data.'
+            )
 
     # this needs to be re-written and given to a different class.
     def SubmitDataForProcessing(self,window):
@@ -208,7 +218,7 @@ class FormEvents:
 
             # at any time you may save the data you have compiled.
             elif event == '_SAVEDATA_':
-                self.file_containing_data.SaveTempFile("temp.csv", self.DATA_GRID_COL_HEADINGS, self.DATA_GRID_NESTED_LIST)
+                self.SaveData()
 
             # at any time, you may view the data you have compiled.
             elif event == '_VIEWDATA_':
