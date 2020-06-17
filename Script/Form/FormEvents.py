@@ -1,7 +1,6 @@
 import time
 
 from Form import GenericPopUp as gpu
-from DataClensing.Locality import Locality
 from DataTablePopUp import *
 from ext import fileHandler as fh
 
@@ -13,7 +12,6 @@ class FormEvents:
     # fh = FormEvents()
     def __init__(self,  layout, app_config):
         # DO NOT SET WINDOW to self.window! for some reason this really slows down the GUI responsiveness.
-        # window = sg.Window('Data Cleansing').Layout(layout)
         window = sg.Window('Data Cleansing', layout, finalize=True)
         self.app_config = app_config
 
@@ -27,7 +25,7 @@ class FormEvents:
         self.COLUMN_DATATYPE_LIST = []  # connects to ListBox: _COLUMN_DATATYPE_
         self.COLUMN_ACTION_LIST = []  # connects to ListBox: _COLUMN_ACTION_
 
-        self.InstantiateForm(window)
+        self.FormExecution(window)
 
 
     def OpenFileAndDisplay(self,window, values):
@@ -122,9 +120,10 @@ class FormEvents:
                                 statement = 'Please select a file prior to viewing associated data.'
                              )
 
+    # TODO: Save Data to a location of the persons choosing with the file of their choosing.
     def SaveData(self):
         if self.file_name_and_path != "":
-            self.file_containing_data.SaveTempFile("temp.csv", self.DATA_GRID_COL_HEADINGS, self.DATA_GRID_NESTED_LIST)
+            self.file_containing_data.SaveTempFile("temp.csv", self.COLUMN_RENAME_LIST, self.DATA_GRID_NESTED_LIST)
         else:
             gpu.GenericPopUp(
                 self.app_config,
@@ -132,31 +131,8 @@ class FormEvents:
                 statement='Please select a file prior to saving associated data.'
             )
 
-    # this needs to be re-written and given to a different class.
-    def SubmitDataForProcessing(self,window):
 
-        self.file_name_and_path = self.values.get('_FILEBROWSE_')
-
-        if self.file_name_and_path != "":
-
-            if (self.selected_column == ""):
-                print('Column heading not selected! ')  # do this first prior to continuing.
-
-            self.updateStatusBar('STUB: With the file name in mind, process each line...')
-
-            l = Locality(window, self.DATA_GRID_COL_HEADINGS, self.DATA_GRID_NESTED_LIST, self.selected_column)
-            DATA_GRID_NESTED_LIST = l.data_nested_list
-
-            self.updateStatusBar('Completed processing : ' + str(l.time_to_execute_seconds))
-
-            window.FindElement('_COLUMN_HEADINGS_').Update(values=self.DATA_GRID_COL_HEADINGS)
-            window.FindElement('_COLUMN_HEADINGS_').set_size((30, len(self.DATA_GRID_COL_HEADINGS)))
-
-            # d = Dates(window, DATA_GRID_COL_HEADINGS, DATA_GRID_NESTED_LIST, self.selected_column)
-            # We need a way to deal with a Data set, rather than always opening the file.
-
-
-    def InstantiateForm(self,window):
+    def FormExecution(self, window):
 
         while True:
 
@@ -174,12 +150,10 @@ class FormEvents:
             # Action #2: A 'Column' must first be selected from the command button.
                 # upon the user selecting from the command button, associated List Box Pos will be Highlighted.
             elif event == '_COMBO_COLUMNNAME_':  # Update associated collumn on click.
-                start_time = time.time()
                 self.IdentifyIndexSelected(values, '_COMBO_COLUMNNAME_')
                 # this is an ambiguous function name; however I am returning the current list information to the Form fo rthe user to know what they have selected.
                 self.UpdateUserInputs(window)
                 self.HighlightAssociatedListBox(window)
-                print("---COMBO Change:  %s seconds ---" % (time.time() - start_time))
 
 
             # Alternative Action #2, a User might accidently select from teh List Box itself. if they do, ...
@@ -190,10 +164,8 @@ class FormEvents:
                 self.HighlightAssociatedListBox(window)
 
 
-            # Alternaive Action #2; If one of these boxes are selected, ignore the selection.
+            # Alternaive Action #2; If one of these boxes are selected, ignore the selection, reset values back to previous selection.
             elif event in ( '_COLUMN_RENAME_HEADINGS_' ,'_COLUMN_DATATYPE_','_COLUMN_ACTION_'):
-                self.selected_column = ""
-                self.selected_column_by_integer = 0
 
                 # this is an ambiguous function name; however I am returning the current list information to the Form fo rthe user to know what they have selected.
                 self.UpdateUserInputs(window)
@@ -214,7 +186,9 @@ class FormEvents:
 
             # The very last step in the entire process. This is the Action shot.
             elif event == '_SUBMIT_':
-                self.SubmitDataForProcessing(window)
+                from BusinessRules import BusinessRules as br
+                f = br.BusinessRules(window,  values)
+
 
             # at any time you may save the data you have compiled.
             elif event == '_SAVEDATA_':
@@ -223,6 +197,5 @@ class FormEvents:
             # at any time, you may view the data you have compiled.
             elif event == '_VIEWDATA_':
                 self.ViewDataViaPopUpWindow()
-
 
         window.Close()

@@ -1,0 +1,41 @@
+---
+title: "R Notebook"
+author: Andrew Wood
+date: 17-June-2020
+output: html_notebook
+---
+
+ This class will control how each column is processed.
+        While column's may be renamed, and 'cleansed' column will have a newly created column, associated with the original.
+           a column called 'Date'
+           my be renamed 'Event_Date'
+           Cleanising of this column will result in a new associated column 'Event_Date_Cleansed'
+
+        Some actions may result in more than one column being created. for instance
+            a column called 'Full Address Details'
+            might contain the following string "555 Hollywood Plaza, Hollywood, 5555, SA"
+            From this, three new fields couild be ascertained:
+                Suburb:   'Hollywood'
+                State:    'SA'
+                Postcode: '5555'
+            AW: 17 June 2020: Note that for Address we are not curretly trying to resolve an Street Name.
+
+
+        Data Cleansing Processes
+            1. Address
+            2. Date Field
+            3. Number field
+            4. Male/Female field ->
+            5. Relationships
+
+        It is unclear in which order this should occur:
+            Data Cleansing
+            Data Mapping
+
+            That is, any data value that is not 'clean' will not be mapped.
+            however, any data value that IS 'clean' does not need to be cleaned as it will automatically map.
+            Thus, perhaps the order is
+                1. Attempt to map based on provided values
+                2. Any value that did not map, Cleanse then map
+
+        Each Business rule may need tweeking, given the highly *** elasticity of data available.

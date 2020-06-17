@@ -2,15 +2,9 @@ import PySimpleGUI as sg
 
 
 def define_gui_layout(app_config):
-    """
-        Starts and executes the GUI
-        Reads data from a Queue and displays the data to the window
-        Returns when the user exits / closes the window
-        """
-    # Colour options: https://user-images.githubusercontent.com/46163555/71361827-2a01b880-2562-11ea-9af8-2c264c02c3e8.jpg
+
     sg.ChangeLookAndFeel(app_config.look_and_feel)
 
-    # ------ Menu Definition ------ #
     menu_def = [['&File', ['&Open', '&Save', 'E&xit', 'Properties']],
                 ['&Edit', ['Paste', ['Special', 'Normal', ], 'Undo'], ],
                 ['&Help', '&About...'], ]
@@ -19,11 +13,7 @@ def define_gui_layout(app_config):
 
     layout = [
         [sg.Menu(menu_def, tearoff=False)],
-        # [
-        #     sg.Text(
-        #         '1. Select the file to process.\n2. Select the column to deidentify. \n3. Select the method to deidentify.'
-        #         '\n4. Select the output file location.')
-        # ],
+
         [sg.Text('_' * app_config.form_width)],
         [
             # https://pypi.org/project/PySimpleGUI/4.0.0/
@@ -91,19 +81,6 @@ def define_gui_layout(app_config):
                      [[sg.InputCombo(values=app_config.combo_action_list, key='_COMBO_ACTION_', change_submits=True, size=(30, 1))]],
                      title_color='white', relief=sg.RELIEF_SUNKEN, tooltip='', size=(36, 1))
         ],
-        # [
-        #     sg.Submit("Update Definition", key='_UPDATE_COLUMN_DEFINITION_', tooltip='STUB', size=command_button_size)
-        # ],
-        # [sg.Text('_' * app_config.form_width)],
-
-        # [sg.Text('_' * app_config.form_width)],
-        # [sg.Multiline(key='_STATUSBAR_', size=(110, 5), auto_size_text=False, text_color='white',
-        #               background_color='lightslategray', visible=app_config.controls_visible_for_debug,
-        #               font=app_config.controls_debug_font)],
-        # [sg.Multiline(key='_EVENTDISPLAYBAR_', size=(110, 2), auto_size_text=False, text_color='white',
-        #               background_color='lightslategray', visible=app_config.controls_visible_for_debug,
-        #               font=app_config.controls_debug_font)],
-
     ]
 
     # https://github.com/PySimpleGUI/PySimpleGUI/blob/master/DemoPrograms/Demo_Multithreaded_Long_Tasks.py
