@@ -38,8 +38,8 @@ class FormEvents:
             self.DATA_GRID_COL_HEADINGS = self.file_containing_data.column_headings
             self.DATA_GRID_NESTED_LIST = self.file_containing_data.data_nested_list
 
-            window.FindElement('_FILETOPROCESS_').Update(text_color='black')
-            window.FindElement('_FILETOPROCESS_').Update(self.file_name_and_path)
+            window['_FILETOPROCESS_'](text_color='black') # short hand for updating an element.
+            window['_FILETOPROCESS_'](self.file_name_and_path)
 
             self.COLUMN_RENAME_LIST = self.DATA_GRID_COL_HEADINGS.copy()  # connects to ListBox: _COLUMN_RENAME_HEADINGS_
             self.COLUMN_DATATYPE_LIST = [''] * len(self.DATA_GRID_COL_HEADINGS)  # connects to ListBox: _COLUMN_DATATYPE_
