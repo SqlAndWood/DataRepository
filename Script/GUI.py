@@ -36,71 +36,73 @@ def define_gui_layout(app_config):
                 initial_folder=app_config.default_file_location,
                 target='_FILEBROWSE_',
                 size = command_button_size
-            ),
-            sg.Submit("View Data", key='_VIEWDATA_', tooltip='', size=command_button_size)
-        ],
+            )
+
+        ]
+        ,[sg.Column([[
+
+                    sg.Submit("View Data", key='_VIEWDATA_', tooltip='', size=command_button_size , pad=((82, 0), (0, 0))),
+
+                    sg.Submit("Save Data", key='_SAVEDATA_', tooltip='', size=command_button_size, pad=(5,3)) ,
+
+                    sg.Submit("Execute", key='_EXECUTE_', tooltip='STUB', size=command_button_size, pad=((443, 0), (0, 0)))
+                    ]])
+        ]
+
+        ,
         [sg.Text('_' * app_config.form_width)],
 
-        [
+        [  # Place frames into Column. Four columns per frame.
             sg.Frame('Column Headings',
                      [[sg.Listbox(key='_COLUMN_HEADINGS_', enable_events=True, values=app_config.column_heading_list,
                                   select_mode='single', size=(30, len(app_config.column_heading_list)))]],
-                     title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='')
+                     title_color='white', relief=sg.RELIEF_SUNKEN, tooltip='')
             ,
             sg.Frame('Rename Column',
                      [[sg.Listbox(key='_COLUMN_RENAME_HEADINGS_', enable_events=True, values=app_config.column_heading_list,
                                   size=(30, len(app_config.column_heading_list)))]],
-                     title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='')
+                     title_color='white', relief=sg.RELIEF_SUNKEN, tooltip='')
             ,
             sg.Frame('DataType Column',
                      [[sg.Listbox(key='_COLUMN_DATATYPE_', enable_events=True, values=app_config.column_heading_list,
                                   size=(30, len(app_config.column_heading_list)))]],
-                     title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='')
+                     title_color='white', relief=sg.RELIEF_SUNKEN, tooltip='')
             ,
             sg.Frame('Action to Apply on Column',
                      [[sg.Listbox(key='_COLUMN_ACTION_', enable_events=True, values=app_config.column_heading_list,
                                   size=(30, len(app_config.column_heading_list)))]],
-                     title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='')
+                     title_color='white', relief=sg.RELIEF_SUNKEN, tooltip='')
         ],
 
         [
             sg.Frame('Select Column',
                      [[sg.InputCombo(values='', enable_events=True, key='_COMBO_COLUMNNAME_', size=(30, 1))]],
-                     title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='', size=(36, 1))
+                     title_color='white', relief=sg.RELIEF_SUNKEN, tooltip='', size=(36, 1))
             ,
             sg.Frame('Rename Column',
                      [[sg.InputText(key='_INPUT_COLUMN_RENAME_', change_submits=True, size=(30, 1))]],
-                     title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='', size=(36, 1))
+                     title_color='white', relief=sg.RELIEF_SUNKEN, tooltip='', size=(36, 1))
             ,
             sg.Frame('Select DataType',
                      [[sg.InputCombo(values=app_config.combo_datatype_list, key='_COMBO_DATATYPE_', change_submits=True, size=(30, 1))]],
-                     title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='', size=(36, 1))
+                     title_color='white', relief=sg.RELIEF_SUNKEN, tooltip='', size=(36, 1))
             ,
             sg.Frame('Select Action',
                      [[sg.InputCombo(values=app_config.combo_action_list, key='_COMBO_ACTION_', change_submits=True, size=(30, 1))]],
-                     title_color='black', relief=sg.RELIEF_SUNKEN, tooltip='', size=(36, 1))
+                     title_color='white', relief=sg.RELIEF_SUNKEN, tooltip='', size=(36, 1))
         ],
         # [
         #     sg.Submit("Update Definition", key='_UPDATE_COLUMN_DEFINITION_', tooltip='STUB', size=command_button_size)
         # ],
-        [sg.Text('_' * app_config.form_width)],
-        [
-            sg.Submit("Process", key='_PROCESS_', tooltip='STUB', size=command_button_size),
-            sg.Submit("UNDO ALL", key='_UNDO_', tooltip='STUB', size=command_button_size)
-        ],
-        [sg.Text('_' * app_config.form_width)],
-        [
-            sg.Submit(key='_SUBMIT_', tooltip='', size=command_button_size),
-            sg.Cancel(size=command_button_size),
-            sg.Submit("View Data", key='_VIEWDATA_', tooltip='', size=command_button_size),
-            sg.Submit("Save Data", key='_SAVEDATA_', tooltip='', size=command_button_size)
-        ],
-        [sg.Multiline(key='_STATUSBAR_', size=(110, 5), auto_size_text=False, text_color='white',
-                      background_color='lightslategray', visible=app_config.controls_visible_for_debug,
-                      font=app_config.controls_debug_font)],
-        [sg.Multiline(key='_EVENTDISPLAYBAR_', size=(110, 2), auto_size_text=False, text_color='white',
-                      background_color='lightslategray', visible=app_config.controls_visible_for_debug,
-                      font=app_config.controls_debug_font)],
+        # [sg.Text('_' * app_config.form_width)],
+
+        # [sg.Text('_' * app_config.form_width)],
+        # [sg.Multiline(key='_STATUSBAR_', size=(110, 5), auto_size_text=False, text_color='white',
+        #               background_color='lightslategray', visible=app_config.controls_visible_for_debug,
+        #               font=app_config.controls_debug_font)],
+        # [sg.Multiline(key='_EVENTDISPLAYBAR_', size=(110, 2), auto_size_text=False, text_color='white',
+        #               background_color='lightslategray', visible=app_config.controls_visible_for_debug,
+        #               font=app_config.controls_debug_font)],
 
     ]
 
