@@ -116,6 +116,6 @@ if __name__ == '__main__':
     layout = define_gui_layout(app_config)
 
     from Form import FormEvents as fe
-    f = fe.FormEvents( layout)
+    f = fe.FormEvents(layout, app_config)
 
     print('Exiting Program')
