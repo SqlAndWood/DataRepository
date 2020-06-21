@@ -184,8 +184,9 @@ class FormEvents:
                 self.HighlightAssociatedListBox(window)
                 # print("---Three over arching things chagned:  %s seconds ---" % (time.time() - start_time))
 
+
             # The very last step in the entire process. This is the Action shot.
-            elif event == '_SUBMIT_':
+            elif event == '_EXECUTE_':
                 from BusinessRules import BusinessRules as br
                 f = br.BusinessRules(window,  values)
 
@@ -197,5 +198,6 @@ class FormEvents:
             # at any time, you may view the data you have compiled.
             elif event == '_VIEWDATA_':
                 self.ViewDataViaPopUpWindow()
+
 
         window.Close()
