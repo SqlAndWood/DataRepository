@@ -24,6 +24,34 @@ class BusinessRules:
         # loop each column in execution_dict["column_headings"]
         print(execution_dict["column_headings"])
         print(execution_dict["column_rename"])
+        print(execution_dict["column_action_list"])
+
+
+        # for column_name in execution_dict["column_headings"]:
+        #     print(column_name)
+
+        for col_headings, action_list in zip(execution_dict["column_headings"], execution_dict["column_action_list"]):
+            # print(details["column_action_list"])
+            print(f'col heading: {col_headings}')
+            ...
+            print(f'action list: {action_list}')
+
+            if action_list == 'Full Address -> [Suburb],[State],[Postcode]':
+                print("execute Address clean over this column")
+
+                # Note in this version, Im passing in the entire data as a nested list array. In the future, only pass in the individual column?
+                l = Locality(window, execution_dict["column_headings"], execution_dict["data_table_nested_list"], col_headings)
+                return_data = l.data_nested_list
+                # I think I should do this.
+                execution_dict["data_table_nested_list"] = l.data_nested_list
+
+                # print(return_data)
+
+                # for rd in return_data:
+                #     print(rd)
+
+
+
 
         #
 
