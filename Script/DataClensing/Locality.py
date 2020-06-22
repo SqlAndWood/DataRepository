@@ -17,6 +17,9 @@ class Locality:
     global locality_columns_to_append
     locality_columns_to_append = ['locality_cleansed', 'state_cleansed', 'postcode_cleansed']
 
+    global locality_columns
+    locality_columns = ['locality', 'state', 'postcode']
+
     # l = DataClensing(file_name_and_path)
     def __init__(self, window, DATA_GRID_COL_HEADINGS, DATA_GRID_NESTED_LIST, column_to_resolve):
 
@@ -35,16 +38,16 @@ class Locality:
         self.data_nested_list = self.process()
         self.time_to_execute_seconds = (time.time() - start_time)
 
-    def updateStatusBar(self, message, override_previous):
-
-        self.window.FindElement('_STATUSBAR_').Update(message, append=False)
-        self.window.Refresh()
+    # def updateStatusBar(self, message, override_previous):
+    #
+    #     self.window.FindElement('_STATUSBAR_').Update(message, append=False)
+    #     self.window.Refresh()
 
     def obtainColumnPositions(self):
         pos = 0
         for col in self.column_headings:
             if col == self.column_to_resolve:
-                print('l', col, 'p', pos)
+                # print('l', col, 'p', pos)
                 return pos
 
             pos += 1
@@ -52,6 +55,7 @@ class Locality:
     def appendColumnHeadings(self):
         # TODO: Test TO SEE IF THE COLUMN ALREADY EXISTS
         for column in locality_columns_to_append:
+            # print('this is the col', column)
             self.column_headings.append(self.column_to_resolve + "_" + column)
 
     def process(self):
@@ -64,15 +68,17 @@ class Locality:
             start_time = time.time()
             la = self.resolveAddress(row[self.column_pos_to_resolve])
 
-            for column in locality_columns_to_append:
+            for column in locality_columns:
+                # print(column)
 
                 if la is not None:
                     row.append(la.get(column))
+
                 else:
                     row.append('')
 
-            if cur_loop_pos % self.display_ever_x_rows != 0:
-                self.updateStatusBar(row, True)
+            # if cur_loop_pos % self.display_ever_x_rows != 0:
+            #     self.updateStatusBar(row, True)
 
             cur_loop_pos += 1
             row.append(time.time() - start_time)
@@ -155,6 +161,7 @@ class Locality:
         dic_sortedOnScore = sorted(dict_ofMatchedLocations, key=lambda i: (i['score'], i['location_len']), reverse=True)
 
         for sk in dic_sortedOnScore:
+            # print('sk found: ', sk)
             # return the first found Address.
             return sk
             break
