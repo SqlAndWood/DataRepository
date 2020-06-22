@@ -187,8 +187,20 @@ class FormEvents:
 
             # The very last step in the entire process. This is the Action shot.
             elif event == '_EXECUTE_':
+
+                execution_dict = {
+                                'file_name_and_path':self.file_name_and_path,
+                                'selected_column_by_integer':self.selected_column_by_integer ,
+                                'selected_column':   self.selected_column ,
+                                "column_headings": self.DATA_GRID_COL_HEADINGS,
+                                "column_rename": self.COLUMN_RENAME_LIST,
+                                "column_data_Type":  self.COLUMN_DATATYPE_LIST,
+                                "column_action_list": self.COLUMN_ACTION_LIST,
+                                "data_table_nested_list": self.DATA_GRID_NESTED_LIST
+                                }
+
                 from BusinessRules import BusinessRules as br
-                f = br.BusinessRules(window,  values)
+                f = br.BusinessRules(window,  values, execution_dict)
 
 
             # at any time you may save the data you have compiled.

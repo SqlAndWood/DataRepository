@@ -4,28 +4,28 @@ from DataClensing.Locality import Locality
 
 class BusinessRules:
     """
-       
+             execution_dict = {
+                                'file_name_and_path':self.file_name_and_path,
+                                'selected_column_by_integer':self.selected_column_by_integer ,
+                                'selected_column':   self.selected_column ,
+                                "column_headings": self.DATA_GRID_COL_HEADINGS,
+                                "column_rename": self.COLUMN_RENAME_LIST,
+                                "column_data_Type":  self.COLUMN_DATATYPE_LIST,
+                                "column_action_list": self.COLUMN_ACTION_LIST,
+                                "data_table_nested_list": self.DATA_GRID_NESTED_LIST
+                                }
+
     """
 
     # fh = FormEvents()
-    def __init__(self,window, values ):
+    def __init__(self,window, values, execution_dict ):
 
-        self.file_name_and_path = values.get('_FILEBROWSE_')
 
-        if self.file_name_and_path != "":
+        # loop each column in execution_dict["column_headings"]
+        print(execution_dict["column_headings"])
+        print(execution_dict["column_rename"])
 
-            if (self.selected_column == ""):
-                print('Column heading not selected! ')  # do this first prior to continuing.
+        # all code below here was for a different branch.
+        #   l = Locality(window, self.DATA_GRID_COL_HEADINGS, self.DATA_GRID_NESTED_LIST, self.selected_column)
+        #   DATA_GRID_NESTED_LIST = l.data_nested_list
 
-            self.updateStatusBar('STUB: With the file name in mind, process each line...')
-
-            l = Locality(window, self.DATA_GRID_COL_HEADINGS, self.DATA_GRID_NESTED_LIST, self.selected_column)
-            DATA_GRID_NESTED_LIST = l.data_nested_list
-
-            self.updateStatusBar('Completed processing : ' + str(l.time_to_execute_seconds))
-
-            window.FindElement('_COLUMN_HEADINGS_').Update(values=self.DATA_GRID_COL_HEADINGS)
-            window.FindElement('_COLUMN_HEADINGS_').set_size((30, len(self.DATA_GRID_COL_HEADINGS)))
-
-            # d = Dates(window, DATA_GRID_COL_HEADINGS, DATA_GRID_NESTED_LIST, self.selected_column)
-            # We need a way to deal with a Data set, rather than always opening the file.
