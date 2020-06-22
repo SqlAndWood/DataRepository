@@ -25,6 +25,8 @@ class BusinessRules:
         print(execution_dict["column_headings"])
         print(execution_dict["column_rename"])
 
+        #
+
         # all code below here was for a different branch.
         #   l = Locality(window, self.DATA_GRID_COL_HEADINGS, self.DATA_GRID_NESTED_LIST, self.selected_column)
         #   DATA_GRID_NESTED_LIST = l.data_nested_list
