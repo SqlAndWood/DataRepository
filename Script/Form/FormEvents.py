@@ -188,6 +188,7 @@ class FormEvents:
             # The very last step in the entire process. This is the Action shot.
             elif event == '_EXECUTE_':
 
+                # This seems to be a better method than using 'Class' in Python. Not sure why.
                 execution_dict = {
                                 'file_name_and_path':self.file_name_and_path,
                                 'selected_column_by_integer':self.selected_column_by_integer ,
