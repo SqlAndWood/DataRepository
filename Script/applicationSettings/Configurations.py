@@ -38,8 +38,8 @@ class Configurations:
 
         self.screen_details = sd.ScreenDetails().monitor_dictionary
 
-        # TODO: Relative Referencing required.
-        self.default_file_location = os.path.abspath(os.path.dirname(""))
+        # TODO: Relative Referencing required
+        #         self.default_file_location = os.path.abspath(os.path.dirname("")).
 
     def sortValues(self, datatype):
         datatype.sort()

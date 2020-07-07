@@ -20,3 +20,7 @@ Script/Form/__pycache__/
 Data/temp.csv
 
 Script/BusinessRules/__pycache__/
+
+Data/
+
+Notebook/.ipynb_checkpoints/
